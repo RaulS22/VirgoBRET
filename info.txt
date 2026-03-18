@@ -1,0 +1,28 @@
+Important seismic stations in the Mediterranean region:
+
+Italy:
+https://terremoti.ingv.it/en/instruments/network/MN
+The station in Sardinia is called SENA
+
+Netherlands:
+https://rdsa.knmi.nl/network/NL/
+The station in The Netherlands is called TERZ
+
+ObsPy reference: https://docs.obspy.org/packages/obspy.clients.fdsn.html#basic-fdsn-client-usage
+
+The format QuakeML: https://quake.ethz.ch/quakeml/QuakeML2.0/BasicEventDescriptionDiscussion
+
+The Italian Seismic Bulletin
+Analysts of the Italian Seismic Bulletin double check the parameters of all earthquakes 
+with magnitude M1.5+ obtained by placing weights and polarity of arrivals of seismic waves 
+and integrating all the data available in the acquisition system.
+
+Since 1985 the data of the Italian Seismic Bulletin are available in the database 
+ISIDe https://terremoti.ingv.it/en/bsi. For the period from January 2002 to 
+16 April 2005, these data, in GSE format, can also be found on http://bollettinosismico.rm.ingv.it/.
+
+Starting from 2015 in the web page /en/bsi the Italian Seismic Bulletin (BSI) is published every 4 
+months and is available for download QuakeML format. For each release of the BSI, is also possible 
+to download a technical document (in Italian, pdf format) which describes the main features of the 
+Italian seismicity and seismic network and specifies the BSI working group. A DOI is assigned to each
+BSI release to make easily quotable the work done by the BSI group.

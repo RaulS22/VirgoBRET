@@ -1,0 +1,14 @@
+/.venv
+/.vscode
+/20240101_20240430__1__INGV__QML
+/dataset-download-aardbevingen_cijfers
+/dataset-download-analog_seismograms
+/dataset-download-netherlands_earthquake_location_uncertainty
+/dataset-download-netherlands_earthquake_magnitude_completeness
+/dataset-download-operational_netherlands_earthquake_magnitude_completeness
+/dataset-download-rdsa_inventory_changelog
+/dataset-download-seismic_hazardmaps
+/dataset-download-seismic_shakemaps
+/spectrograms_jan_out_filtered
+/spectrograms_jan_unfiltered
+/spectrograms_jan_zoomed_filtered
