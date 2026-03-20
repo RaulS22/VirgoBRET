@@ -19,6 +19,8 @@ plt.rcParams.update({
 ##########################################################
 
 """
+Some documentation:
+
 https://www.einstein-telescope.it/en/2025/12/02/einstein-telescope-a-new-ingv-center-to-map-the-subsurface-of-sardinia/
 With its creation, INGV aims to strengthen its scientific contribution to Italy's candidacy to host the Einstein 
 Telescope (ET) gravitational-wave observatory in the area of the former Sos Enattos mine, in the province of Nuoro.
@@ -32,9 +34,7 @@ Notar que não é https
 
 Network -> Station -> Location -> Channel (SEED Reference Manual FDSN)
 Recurso extra: IRIS Station Monitor https://www.iris.edu/app/station_monitor/
-"""
 
-""" 
 3M (2024-2029): Seismic Arrays for the noise characterization of the Sardinia Einstein Telescope candidacy (SANSET)
 https://www.fdsn.org/networks/detail/3M_2024/ 
 
@@ -52,3 +52,8 @@ Data for this network is not currently available through FDSN web services.
 https://www.fdsn.org/networks/detail/7P_2021/
 Data avaliability: http://webservices.ingv.it/fdsnws/dataselect/1/
 """
+
+
+# Open Data: https://data.ingv.it/
+# Einstein Telescope: https://data.ingv.it/en/dataset/1089#additional-metadata
+# Available at: https://eida.ingv.it/en/network/3M_2024
