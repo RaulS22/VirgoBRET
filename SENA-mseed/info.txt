@@ -1,0 +1,6 @@
+The files ET-mseed/eida_response_MN-SENA_20240101000000_20240131000000.mseed and ET-mseed/eida_response_MN-SENA_20240101000000_20240202000000.mseed correspond to SENA data
+The data is from 01-01-2024 to 02-02-2024 (DD-MM-YYYY)
+
+Data available at: https://eida.ingv.it/en/getdata/MN-SENA
+Start time: 00:00 01-11-2024 (DD/MM/YYYY)
+End time: 00:00 02-02-2024
