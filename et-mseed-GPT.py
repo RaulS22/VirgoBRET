@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 from obspy import read
 from pathlib import Path
 
+
+
 # =========================
 # Paths
 # =========================
 input_dir = Path("/home/rauls/Desktop/VirgoBRET/ET-mseed/")
-output_dir = Path("ET-mseed-plots")
+output_dir = Path("ET-mseed-plots-test")
 output_dir.mkdir(exist_ok=True)
 
 # =========================
