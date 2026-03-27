@@ -1,0 +1,38 @@
+import numpy as np 
+import matplotlib.pyplot as plt
+from obspy import read_events
+from obspy.clients.fdsn import Client
+
+# ==========================================================
+# Plot Style (LaTeX-quality)
+# ==========================================================
+
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "serif",
+    "font.size": 13,
+    "axes.labelsize": 14,
+    "axes.titlesize": 15,
+    "figure.figsize": (8,5),
+})
+
+#############################################################
+
+path = "/home/rauls/Desktop/VirgoBRET/ET-mseed"
+
+"""
+The files ET-mseed/eida_response_MN-SENA_20240101000000_20240131000000.mseed and ET-mseed/eida_response_MN-SENA_20240101000000_20240202000000.mseed correspond to SENA data
+All of the other files correspond to Einstein Telescope Tests, which are available at https://eida.ingv.it/en/getdata/3M_2024 and are from 01-11-2024 to 02-11-2025 (DD-MM-YYYY)
+It is important to point out that the first leters "FAB??" correspond to the respective station code of the network 3M_2024, available at https://www.orfeus-eu.org/stationbook/networks/3M/2024/
+All of them are "HH?" type, which means "High Broadband" or "High-Gain Broadband"
+The tird letter "Z/N/E" stands for the orientation Vertical/North-South/East-Weast
+More information about the naming convention is available at https://epic.earthscope.org/webfm_send/2134
+"""
+
+# ET files
+
+
+# SENA files
+
+sena1= path+"eida_response_MN-SENA_20240101000000_20240131000000.mseed"
+sena2= path+"eida_response_MN-SENA_20240101000000_20240202000000.mseed"
