@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from obspy import read
 from pathlib import Path
 
@@ -10,42 +11,66 @@ output_dir = Path("ET-mseed-plots")
 output_dir.mkdir(exist_ok=True)
 
 # =========================
-# Select file (single file case)
+# File
 # =========================
 et_file = input_dir / "eida_response_3M-FAB00_20241101000000_20251102000000.mseed"
 
 # =========================
-# Read data
+# Read
 # =========================
 st = read(str(et_file))
 
-# Optional: inspect content
+# Optional: sort by channel for consistency (EHE, EHN, EHZ)
+st.sort(keys=["channel"])
+
 print(st)
 
 # =========================
-# Process each trace
+# Preprocess
 # =========================
 for tr in st:
-    tr_proc = tr.copy()
+    tr.detrend("linear")
+    tr.detrend("demean")
 
-    # Minimal preprocessing (no bandpass)
-    tr_proc.detrend("linear")
-    tr_proc.detrend("demean")
+# =========================
+# Select only 3 components (if available)
+# =========================
+channels = ["HHE", "HHN", "HHZ"]
+selected_traces = []
 
-    # =========================
-    # Build filenames
-    # =========================
-    # Include channel name to avoid overwriting if multiple traces exist
-    base_name = f"{et_file.stem}_{tr_proc.stats.channel}"
+for ch in channels:
+    tr = st.select(channel=ch)
+    if len(tr) > 0:
+        selected_traces.append(tr[0])
 
-    outfile = output_dir / f"{base_name}.pdf"
-    outfile_rel = output_dir / f"{base_name}_relative.pdf"
+# =========================
+# Plot (3 stacked subplots)
+# =========================
+n = len(selected_traces)
 
-    # =========================
-    # Save plots (ObsPy-native)
-    # =========================
-    tr_proc.plot(outfile=str(outfile))
-    tr_proc.plot(type="relative", outfile=str(outfile_rel))
+fig, axes = plt.subplots(n, 1, figsize=(12, 8), sharex=True)
 
-    print(f"Saved: {outfile}")
-    print(f"Saved: {outfile_rel}")
+if n == 1:
+    axes = [axes]  # ensure iterable
+
+for ax, tr in zip(axes, selected_traces):
+    t = np.linspace(0, tr.stats.npts / tr.stats.sampling_rate, tr.stats.npts)
+
+    ax.plot(t, tr.data)
+    ax.set_ylabel(tr.stats.channel)
+    ax.grid()
+
+axes[-1].set_xlabel("Time (s)")
+
+# Title
+fig.suptitle(et_file.stem)
+
+# =========================
+# Save
+# =========================
+outfile = output_dir / f"{et_file.stem}_3components.pdf"
+
+plt.savefig(outfile)
+plt.close(fig)
+
+print(f"Saved: {outfile}")
