@@ -2,23 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from obspy import read
 from obspy.clients.fdsn import Client
-
-# ==========================================================
-# Plot Style (LaTeX-quality)
-# ==========================================================
-
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "serif",
-    "font.size": 13,
-    "axes.labelsize": 14,
-    "axes.titlesize": 15,
-    "figure.figsize": (8,5),
-})
-
-#############################################################
-
-path = "/home/rauls/Desktop/VirgoBRET/ET-mseed/"
+from pathlib import Path
 
 """
 The files ET-mseed/eida_response_MN-SENA_20240101000000_20240131000000.mseed and ET-mseed/eida_response_MN-SENA_20240101000000_20240202000000.mseed correspond to SENA data
@@ -35,20 +19,58 @@ You can also check https://docs.obspy.org/tutorial/index.html for a quick tutori
 
 # ET files
 
+input_dir = Path("/home/rauls/Desktop/VirgoBRET/ET-mseed/")
+output_dir = Path("ET-mseed-plots")
+output_dir.mkdir(exist_ok=True)
 
-# SENA files
-# These files are 1gb each, so I will not read them in this code by now
-
-#sena1= path+"eida_response_MN-SENA_20240101000000_20240131000000.mseed"
-#sena2= path+"eida_response_MN-SENA_20240101000000_20240202000000.mseed"
-
-
-#sn1 = read(sena1)
-#sn2 = read(sena2)
-
-#print(sn1)
-#print(sn2)
+mseed_files = sorted(input_dir.glob("*.mseed"))
+mseed_files = [f for f in mseed_files if f.name != "eida_response_20241101000000_20260323000000.mseed"] #Excluding the 1gb file 
+#print(mseed_files)
 
 
-#sn1.plot()
-#sn2.plot()
+for file in mseed_files:
+    print("\nProcessing:", file.name)
+
+    try:
+        st = read(str(file))
+        st.sort(keys=["channel"])
+
+        for tr in st:
+            tr.detrend("linear")
+            tr.detrend("demean")
+
+        channels = ["HHE", "HHN", "HHZ"]
+        selected_traces = []
+
+        for ch in channels:
+            tr = st.select(channel=ch)
+            if len(tr) > 0:
+                selected_traces.append(tr[0])
+            
+        n = len(selected_traces)
+
+        fig, axes = plt.subplots(n, 1, figsize=(12, 8), sharex=True)
+
+        if n == 1:
+            axes = [axes]  # ensure iterable
+
+        for ax, tr in zip(axes, selected_traces):
+            t = np.linspace(0, tr.stats.npts / tr.stats.sampling_rate, tr.stats.npts)
+
+        ax.plot(t, tr.data)
+        ax.set_ylabel(tr.stats.channel)
+        ax.grid()
+
+        axes[-1].set_xlabel("Time (s)")
+
+        fig.suptitle(file.stem)
+        outfile = output_dir / f"{file.stem}_3components.pdf"
+        plt.savefig(outfile)
+        plt.close(fig)
+        print(f"Saved: {outfile}")
+
+    except Exception as e:
+
+        print("Failed:", e)
+        continue
+
