@@ -13,6 +13,7 @@
 /spectrograms_jan_unfiltered
 /spectrograms_jan_zoomed_filtered
 /3d_plots_filtered
+/ET-mseed
 TesteAPI.py
 API_GPT.py
 API_Neth.py
