@@ -1,4 +1,5 @@
 All of the files correspond to Einstein Telescope Tests, which are available at https://eida.ingv.it/en/getdata/3M_2024 and are from 01-11-2024 to 02-11-2025 (DD-MM-YYYY)
+Another important reference is: https://www.fdsn.org/networks/detail/3M_2024/
 It is important to point out that the first leters "FAB??" correspond to the respective station code of the network 3M_2024, available at https://www.orfeus-eu.org/stationbook/networks/3M/2024/
 All of them are "HH?" type, which means "High Broadband" or "High-Gain Broadband"
 The tird letter "Z/N/E" stands for the orientation Vertical/North-South/East-Weast
