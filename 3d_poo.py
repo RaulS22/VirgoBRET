@@ -4,7 +4,7 @@ from obspy import read, read_inventory, UTCDateTime
 from pathlib import Path
 import gc
 
-input_dir = Path("/home/rauls/Desktop/VirgoBRET/SENA-mseed")
+input_dir = Path("/home/rauls/Desktop/GithubITA/VirgoBRET/SENA-mseed")
 
 class SpectralCubeBuilder:
     def __init__(
@@ -225,10 +225,10 @@ class SpectralCubeBuilder:
 
 if __name__ == "__main__":
     builder = SpectralCubeBuilder(
-    mseed_file=input_dir/"eida_response_MN-SENA_20240101000000_20240131000000.mseed",
+    mseed_file=input_dir/"eida_response_MN-SENA_20210801000000_20210831235959.mseed",
     inventory_file="fdsn_station.xml",
-    start_date="2024-01-01",
-    end_date="2024-01-31",
+    start_date="2021-08-01",
+    end_date="2021-08-31",
     )
 
     builder.build_cube()
@@ -236,5 +236,5 @@ if __name__ == "__main__":
 
     builder.plot_3d(
     Z,
-    title="January Spectral Cube",
-    output_path="sena-mseed-3d_plots/january_cube.pdf")
+    title="August Spectral Cube",
+    output_path="sena-mseed-3d_plots/august_cube.pdf")
