@@ -40,6 +40,9 @@
 /SENA-mseed/eida_response_MN-SENA_20210801000000_20210831235959.mseed
 /SENA-mseed/eida_response_MN-SENA_20210808000000_20210814235959.mseed
 /sena-jan24-raw-plots
+/sena-ago21-fft-notPSD
+/sena-ago21-filtered-test
+/sena-ago21-spectrogram
 TesteAPI.py
 API_GPT.py
 API_Neth.py
