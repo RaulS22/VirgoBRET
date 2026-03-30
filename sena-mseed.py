@@ -44,7 +44,8 @@ while current_day < end_date:
     for tr in st_day:
         tr.detrend("linear")
         tr.detrend("demean")
-        tr.resample(10.0)  # reduce size immediately
+        tr.filter("bandpass", freqmin=0.05, freqmax=1.0, corners=4, zerophase=True)
+        #tr.resample(1.0)  # reduce size immediately, test was done with 10.0Hz
 
     # Select channels
     channels = ["BHE", "BHN", "BHZ", "HHE", "HHN", "HHZ"]
