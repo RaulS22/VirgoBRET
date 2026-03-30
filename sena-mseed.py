@@ -14,18 +14,18 @@ and set debugging options.'''
 # =========================
 # Paths
 # =========================
-input_dir = Path("/home/rauls/Desktop/GithubITA/VirgoBRET/SENA-mseed")
-output_dir = Path("sena-ago21-filtered-fft-test")
+input_dir = Path("/home/rauls/Desktop/VirgoBRET/SENA-mseed")
+output_dir = Path("sena-jan24-filtered-test")
 output_dir.mkdir(exist_ok=True)
 
 # =========================
 # File
 # =========================
-et_file = input_dir / "eida_response_MN-SENA_20210801000000_20210831235959.mseed"
+et_file = input_dir / "eida_response_MN-SENA_20240101000000_20240131000000.mseed"
 print(f"Processing: {et_file}")
 
-start_date = UTCDateTime("2021-08-01")
-end_date   = UTCDateTime("2021-08-31")
+start_date = UTCDateTime("2024-01-01")
+end_date   = UTCDateTime("2024-01-31")
 
 current_day = start_date
 

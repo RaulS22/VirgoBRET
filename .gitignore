@@ -43,6 +43,8 @@
 /sena-ago21-fft-notPSD
 /sena-ago21-filtered-test
 /sena-ago21-spectrogram
+/sena-jan24-filtered-test
+/sena-jan24-spectrogram
 TesteAPI.py
 API_GPT.py
 API_Neth.py
