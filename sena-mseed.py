@@ -4,22 +4,28 @@ from obspy import read
 from pathlib import Path
 from obspy import UTCDateTime
 
+# Debugging
+import gc
+'''This module provides an interface to the optional garbage collector. 
+It provides the ability to disable the collector, tune the collection frequency,
+and set debugging options.'''
+
 
 # =========================
 # Paths
 # =========================
-input_dir = Path("/home/rauls/Desktop/VirgoBRET/SENA-mseed")
-output_dir = Path("sena-jan24-filtered-test")
+input_dir = Path("/home/rauls/Desktop/GithubITA/VirgoBRET/SENA-mseed")
+output_dir = Path("sena-ago21-filtered-fft-test")
 output_dir.mkdir(exist_ok=True)
 
 # =========================
 # File
 # =========================
-et_file = input_dir / "eida_response_MN-SENA_20240101000000_20240131000000.mseed"
+et_file = input_dir / "eida_response_MN-SENA_20210801000000_20210831235959.mseed"
 print(f"Processing: {et_file}")
 
-start_date = UTCDateTime("2024-01-01")
-end_date   = UTCDateTime("2024-01-31")
+start_date = UTCDateTime("2021-08-01")
+end_date   = UTCDateTime("2021-08-31")
 
 current_day = start_date
 
@@ -44,11 +50,13 @@ while current_day < end_date:
     for tr in st_day:
         tr.detrend("linear")
         tr.detrend("demean")
-        tr.filter("bandpass", freqmin=0.05, freqmax=1.0, corners=4, zerophase=True)
-        #tr.resample(1.0)  # reduce size immediately, test was done with 10.0Hz
+        tr.resample(2.1) # do this before filtering to reduce size, the first test was done with 10.0Hz
+        # do not use 1Hz at the resample, it is too close to the Nyquist frequency
+        tr.data = tr.data.astype(np.float32)
+        tr.filter("bandpass", freqmin=0.1, freqmax=1.0)
 
     # Select channels
-    channels = ["BHE", "BHN", "BHZ", "HHE", "HHN", "HHZ"]
+    channels = ["HHE", "HHN", "HHZ"] # ["BHE", "BHN", "BHZ", "HHE", "HHN", "HHZ"]
     selected_traces = []
 
     for ch in channels:
@@ -79,5 +87,9 @@ while current_day < end_date:
     plt.close(fig)
 
     print(f"Saved: {outfile}")
+
+    del st_day
+    del selected_traces
+    gc.collect()
 
     current_day = next_day
