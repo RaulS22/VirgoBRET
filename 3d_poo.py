@@ -156,6 +156,15 @@ class SpectralCubeBuilder:
     def normalize(self):
         self.counts[self.counts == 0] = 1
         self.spectra /= self.counts[:, :, None]
+    '''
+    It is important to note that the normalization step is crucial for ensuring that the spectral power
+    values in the cube are comparable across different days and hours, especially since some time bins
+    may have more data than others. By dividing the accumulated spectra by the count of segments, we can 
+    mitigate the effects of varying data availability and obtain a more accurate representation of the 
+    underlying seismic activity.
+
+    https://dsp.stackexchange.com/questions/19311/stft-why-overlapping-the-window
+    '''
 
     # ==========================================================
     # Extract slice
