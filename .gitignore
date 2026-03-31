@@ -45,6 +45,7 @@
 /sena-ago21-spectrogram
 /sena-jan24-filtered-test
 /sena-jan24-spectrogram
+/SENA-files
 TesteAPI.py
 API_GPT.py
 API_Neth.py

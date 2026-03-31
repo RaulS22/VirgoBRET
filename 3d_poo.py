@@ -4,7 +4,7 @@ from obspy import read, read_inventory, UTCDateTime
 from pathlib import Path
 import gc
 
-input_dir = Path("/home/rauls/Desktop/GithubITA/VirgoBRET/SENA-mseed")
+input_dir = Path("/home/rauls/Desktop/GithubITA/VirgoBRET/SENA-files")
 
 class SpectralCubeBuilder:
     def __init__(
