@@ -6,6 +6,11 @@
 /old/spectrograms_jan_zoomed_filtered
 /old/3d_plots_filtered
 /old/ET-mseed/
+/old/ET-mseed-plots
+/old/ET-mseed-plots-test
+/sena-ago21-fft-notPSD
+/sena-ago21-filtered-test
+/sena-ago21-spectrogram
 /SENA-mseed/eida_response_MN-SENA_20240101000000_20240131000000.mseed
 /SENA-mseed/eida_response_MN-SENA_20240101000000_20240202000000.mseed
 /SENA-mseed/eida_response_MN-SENA_20210801000000_20210807235959.mseed
@@ -18,6 +23,9 @@
 /sena-ago21-spectrogram
 /sena-jan24-filtered-test
 /sena-jan24-spectrogram
+/spectrograms_jan_zoomed_filtered
+/spectrograms_jan_out_filtered
+spectrograms_jan_unfiltered
 /SENA-files
 TesteAPI.py
 API_GPT.py
