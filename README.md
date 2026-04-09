@@ -1,7 +1,10 @@
-### About This Work ###
+### About data used at this work ###
 
 This work has been done by using open data from INGV.
 The aim is to process seismic data from SoS Enatos region.
+
+Data available at: https://eida.ingv.it/en/getdata/ 
+for SoS Enatos region it is necessary to search for SENA.
 
 # Old folder #
 
