@@ -27,6 +27,9 @@
 /spectrograms_jan_out_filtered
 spectrograms_jan_unfiltered
 /SENA-files
+/sena-jan24-spectrogram-100Hz
+/sena-jan24-filtered-test-100Hz
+/sena-mseed-3d_plots_100Hz
 TesteAPI.py
 API_GPT.py
 API_Neth.py

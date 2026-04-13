@@ -15,7 +15,7 @@ and set debugging options.'''
 # Paths
 # =========================
 input_dir = Path("/home/rauls/Desktop/VirgoBRET/SENA-mseed")
-output_dir = Path("sena-jan24-filtered-test")
+output_dir = Path("sena-jan24-filtered-test-100Hz")
 output_dir.mkdir(exist_ok=True)
 
 # =========================
@@ -25,7 +25,7 @@ et_file = input_dir / "eida_response_MN-SENA_20240101000000_20240131000000.mseed
 print(f"Processing: {et_file}")
 
 start_date = UTCDateTime("2024-01-01")
-end_date   = UTCDateTime("2024-01-31")
+end_date   = UTCDateTime("2024-02-01")
 
 current_day = start_date
 
@@ -50,10 +50,10 @@ while current_day < end_date:
     for tr in st_day:
         tr.detrend("linear")
         tr.detrend("demean")
-        tr.resample(2.1) # do this before filtering to reduce size, the first test was done with 10.0Hz
+        tr.resample(210.0) # do this before filtering to reduce size, the first test was done with 10.0Hz
         # do not use 1Hz at the resample, it is too close to the Nyquist frequency
         tr.data = tr.data.astype(np.float32)
-        tr.filter("bandpass", freqmin=0.1, freqmax=1.0)
+        tr.filter("bandpass", freqmin=0.1, freqmax=100.0)
 
     # Select channels
     channels = ["HHE", "HHN", "HHZ"] # ["BHE", "BHN", "BHZ", "HHE", "HHN", "HHZ"]

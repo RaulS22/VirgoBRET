@@ -8,7 +8,7 @@ import gc
 # Paths
 # =========================
 input_dir = Path("/home/rauls/Desktop/VirgoBRET/SENA-mseed")
-output_dir = Path("sena-jan24-spectrogram")
+output_dir = Path("sena-jan24-spectrogram-100Hz")
 output_dir.mkdir(exist_ok=True)
 
 et_file = input_dir / "eida_response_MN-SENA_20240101000000_20240131000000.mseed"
@@ -53,9 +53,9 @@ while current_day < end_date:
     for tr in st_day:
         tr.detrend("linear")
         tr.detrend("demean")
-        tr.resample(2.1)
+        tr.resample(210.0)
         tr.data = tr.data.astype(np.float32)
-        tr.filter("bandpass", freqmin=0.1, freqmax=1.0)
+        tr.filter("bandpass", freqmin=0.1, freqmax=100.0)
 
     # =========================
     # Select HHZ
@@ -135,7 +135,7 @@ while current_day < end_date:
     )
 
     ax.set_yscale("log")
-    ax.set_ylim(0.01, 2.0)
+    ax.set_ylim(0.01, 101.0)
 
     ax.set_xlabel("Time (hours)")
     ax.set_ylabel("Frequency (Hz)")

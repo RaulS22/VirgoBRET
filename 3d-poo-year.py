@@ -12,7 +12,7 @@ from concurrent.futures import ProcessPoolExecutor
 # ==========================================================
 BASE_DIR = Path("/home/rauls/Desktop/VirgoBRET/SENA-files/2022")
 INVENTORY_FILE = "fdsn_station.xml"
-OUTPUT_DIR = Path("sena-mseed-3d_plots")
+OUTPUT_DIR = Path("sena-mseed-3d_plots_100Hz")
 OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 
 PARALLEL = False   
@@ -33,8 +33,8 @@ class SpectralCubeBuilder:
         window_length_sec=600,
         overlap_fraction=0.5,
         freqmin=0.1,
-        freqmax=1.0,
-        resample_freq=2.1,
+        freqmax=100.0,
+        resample_freq=210.0,
         nfreq=128,
     ):
         self.mseed_file = Path(mseed_file)
