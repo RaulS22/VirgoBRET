@@ -21,6 +21,7 @@ bands = {
 }
 
 blrms = blrms.BLRMSProcessor(processed_stream, bands=bands, window=60)
-
 blrms.compute_blrms()
 blrms.plot()
+
+# Note: Only a minimal test
