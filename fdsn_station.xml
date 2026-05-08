@@ -4,7 +4,7 @@
   <Sender>INGV-ONT</Sender>
   <Module>INGV-ONT WEB SERVICE: fdsnws-station | version: 1.1.64</Module>
   <ModuleURI>/exist/apps/fdsn-station/fdsnws/station/1/query?starttime=2021-11-30T23%3A59%3A59.430000&amp;endtime=2021-12-29T23%3A02%3A15.040000&amp;network=MN&amp;station=SENA&amp;level=response</ModuleURI>
-  <Created>2026-05-08T20:38:23.365000Z</Created>
+  <Created>2026-05-08T22:46:31.563000Z</Created>
   <Network code="MN" startDate="1988-01-01T00:00:00.000000Z" restrictedStatus="open">
     <Description>Mediterranean Very Broadband Seismographic Network</Description>
     <Identifier type="DOI">10.13127/sd/fbbbtdtd6q</Identifier>
