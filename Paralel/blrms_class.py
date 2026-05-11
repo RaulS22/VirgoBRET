@@ -79,10 +79,10 @@ class BLRMSProcessor:
 
             plt.plot(times, values, marker="o", label=band_name)
 
-        plt.xlabel("Date")
-        plt.ylabel("Daily Median Ground Velocity [nm/s]")
-        plt.yscale("log")
-        plt.grid(True)
-        plt.legend()
-        plt.tight_layout()
-        plt.savefig("blrms_plot.pdf", dpi=300)
+            plt.xlabel("Date")
+            plt.ylabel("Daily Median Ground Velocity [nm/s]")
+            plt.yscale("log")
+            plt.grid(True)
+            plt.legend()
+            plt.tight_layout()
+            plt.savefig("blrms_plot.pdf", dpi=300)
