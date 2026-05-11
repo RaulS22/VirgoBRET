@@ -3,7 +3,7 @@ import numpy as np
 import multiprocessing as mp
 from pathlib import Path
 from obspy.clients.fdsn import Client
-from obspy import read
+from obspy import read, Stream
 
 
 # ==========================================================
@@ -11,12 +11,9 @@ from obspy import read
 # ==========================================================
 
 def process_chunk(args):
-
     (tr, inv, start,end, pre_filt, water_level) = args
-
     try:
         temp = tr.slice(starttime=start,endtime=end).copy()
-
         if len(temp.data) == 0:
             return None
 
@@ -37,7 +34,6 @@ def process_chunk(args):
 # ==========================================================
 
 class SeismicProcessor:
-
     def __init__(
         self,
         mseed_file,
@@ -210,4 +206,11 @@ if __name__ == "__main__":
     )
 
     processed_stream = processor.run()
+    final_stream = Stream(traces=processed_stream)
+
+    # Export to MiniSEED
+    final_stream.write(
+        "processed_output.mseed",
+        format="MSEED"
+    )
     print("\nProcessing complete!")

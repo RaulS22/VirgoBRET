@@ -1,0 +1,41 @@
+import time
+import numpy as np
+import multiprocessing as mp
+from pathlib import Path
+from obspy.clients.fdsn import Client
+from obspy import read, Stream
+from parallel_class import *
+
+
+if __name__ == "__main__":
+    base_folder = Path("SENA-files")
+    # Loop through all .mseed files inside yearly folders
+    for mseed_path in base_folder.glob("*/*.mseed"):
+        print(f"\nProcessing: {mseed_path}")
+        # Folder name = year
+        year = mseed_path.parent.name
+        # Extract month from filename
+        # Example filename:
+        # eida_response_MN-SENA_20211201000000_20211231235959.mseed
+        filename = mseed_path.stem
+        date_block = filename.split("_")[-2]
+        month = date_block[4:6]
+
+        processor = SeismicProcessor(
+            mseed_file=mseed_path,
+            chunk_duration=6 * 3600,
+            n_processes=8
+        )
+
+        processed_stream = processor.run()
+        output_dir = Path("Processed")
+        output_dir.mkdir(exist_ok=True)
+
+        output_name = f"{month}{year}processed.mseed"
+        output_path = output_dir / output_name
+
+        final_stream = Stream(processed_stream)
+        final_stream.write(
+            str(output_path),
+            format="MSEED"
+        )
