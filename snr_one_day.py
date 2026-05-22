@@ -7,7 +7,7 @@ from pathlib import Path
 from obspy.signal.trigger import recursive_sta_lta, trigger_onset, z_detect, ar_pick
 
 
-st = read("22-02-25-Raul.mseed")
+st = read("SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed")
 tr = st[0]
 starttime = tr.stats.starttime
 endtime = tr.stats.endtime
@@ -25,7 +25,7 @@ inv = client.get_stations(
 
 inv.write(xml_file, format="STATIONXML", validate=True)
 
-#Aqui e feito um taper para suavizar as "bordas" referentes a 5% em cada extremo
+# Aqui e feito um taper para suavizar as "bordas" referentes a 5% em cada extremo
 tr.detrend("demean")
 tr.detrend("linear")
 #tr.taper(max_percentage=0.05) #atrapalha pra dedeu no SNR
@@ -80,7 +80,7 @@ on_threshold, off_threshold = 2.5, 1.5
 triggers = trigger_onset(cft, on_threshold, off_threshold)
 print(f"Number of triggers STA/LTA: {len(triggers)}")
 
-#partindo dos tempos (s) dos tiggers obter o tempo (UTC)
+# partindo dos tempos (s) dos tiggers obter o tempo (UTC)
 p_times = []
 
 for trig in triggers:
@@ -151,57 +151,57 @@ ax[1].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M:%S"))
 fig.autofmt_xdate()
 plt.savefig("Z_DETECT.pdf")
 
-# AR pick (GPT)
-
-tr_ar = tr_mid
-df = tr_ar.stats.sampling_rate
-
-# Run AR picker
-p_pick, s_pick = ar_pick(
-    tr_ar.data,   # Z
-    tr_ar.data,   # N (placeholder)
-    tr_ar.data,   # E (placeholder)
-    df,
-
-    # Bandpass for AR picker internally
-    0.1,              # f1
-    1.0,              # f2
-
-    # STA/LTA windows
-    5.0,                # lta_p
-    600.0,              # sta_p
-    5.0,                # lta_s
-    600.0,              # sta_s
-
-    # AR model parameters
-    3,                # m_p
-    3,                # m_s
-
-    # Variance windows
-    10,              # l_p
-    10               # l_s
-)
-
-#print("P arrival:", p_pick)
-#print("S arrival:", s_pick)
-
-p_time = tr_ar.stats.starttime + p_pick
-s_time = tr_ar.stats.starttime + s_pick
-#print("P UTC:", p_time)
-#print("S UTC:", s_time)
-
-# ==========================================
-# Plot
-# ==========================================
-
-plt.figure(figsize=(12,5))
-plt.plot(time_array, tr_ar.data*1e9)
-plt.axvline(p_time.datetime, color='r', linestyle='--', label='P')
-plt.axvline(s_time.datetime, color='b', linestyle='--', label='S')
-plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M:%S"))
-plt.gcf().autofmt_xdate()
-plt.xlabel("Time")
-plt.ylabel("Velocity [nm/s]")
-plt.legend()
-plt.grid()
-plt.savefig("AR_PICK.pdf")
+# # AR pick (GPT)
+# 
+# tr_ar = tr_mid
+# df = tr_ar.stats.sampling_rate
+# 
+# # Run AR picker
+# p_pick, s_pick = ar_pick(
+#     tr_ar.data,   # Z
+#     tr_ar.data,   # N (placeholder)
+#     tr_ar.data,   # E (placeholder)
+#     df,
+# 
+#     # Bandpass for AR picker internally
+#     0.1,              # f1
+#     1.0,              # f2
+# 
+#     # STA/LTA windows
+#     5.0,                # lta_p
+#     600.0,              # sta_p
+#     5.0,                # lta_s
+#     600.0,              # sta_s
+# 
+#     # AR model parameters
+#     3,                # m_p
+#     3,                # m_s
+# 
+#     # Variance windows
+#     10,              # l_p
+#     10               # l_s
+# )
+# 
+# #print("P arrival:", p_pick)
+# #print("S arrival:", s_pick)
+# 
+# p_time = tr_ar.stats.starttime + p_pick
+# s_time = tr_ar.stats.starttime + s_pick
+# #print("P UTC:", p_time)
+# #print("S UTC:", s_time)
+# 
+# # ==========================================
+# # Plot
+# # ==========================================
+# 
+# plt.figure(figsize=(12,5))
+# plt.plot(time_array, tr_ar.data*1e9)
+# plt.axvline(p_time.datetime, color='r', linestyle='--', label='P')
+# plt.axvline(s_time.datetime, color='b', linestyle='--', label='S')
+# plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M:%S"))
+# plt.gcf().autofmt_xdate()
+# plt.xlabel("Time")
+# plt.ylabel("Velocity [nm/s]")
+# plt.legend()
+# plt.grid()
+# plt.savefig("AR_PICK.pdf")
