@@ -7,7 +7,7 @@ from pathlib import Path
 from obspy.signal.trigger import recursive_sta_lta, trigger_onset, z_detect, ar_pick
 
 
-st = read("SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed")
+st = read("14-08-25-Fabi.mseed")
 tr = st[0]
 starttime = tr.stats.starttime
 endtime = tr.stats.endtime
@@ -87,7 +87,7 @@ for trig in triggers:
     p_sample = trig[0]
     p_time = tr_sta.stats.starttime + 1200 + p_sample / df #tira os 20 primeiros minutos porque isso atrapalha muito o SNR
     p_times.append(p_time)
-    #print(p_time)
+    print(p_time)
 
 
 min_separation = 20
@@ -133,7 +133,7 @@ for trig in triggers:
     p_sample = trig[0]
     p_time = (tr_detect.stats.starttime + p_sample / df)
     p_times.append(p_time)
-    #print(p_time)
+    print(p_time)
 
 fig, ax = plt.subplots(2, 1, figsize=(12,8), sharex=True)
 ax[0].plot(time_array, tr_detect.data*1e9, linewidth=0.8)

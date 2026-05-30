@@ -6,7 +6,6 @@ from obspy import read
 from obspy.clients.fdsn import Client
 from obspy.signal.trigger import recursive_sta_lta, trigger_onset, z_detect
 
-
 # ==========================================================
 # PREPROCESSING
 # ==========================================================
@@ -127,6 +126,8 @@ def plot_detection(
     # ------------------------------------------------------
 
     ax[1].plot(time_array,cft,linewidth=0.8)
+    ax[1].axhline(x=1.5, color="g", linestine="--", alpha=0.3)
+    ax[1].axhline(x=2.5, color="b", linestine="--", alpha=0.3)
     ax[1].set_ylabel("Characteristic Function")
     ax[1].grid(alpha=0.3)
     ax[1].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M:%S"))
