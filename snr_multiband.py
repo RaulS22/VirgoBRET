@@ -126,8 +126,6 @@ def plot_detection(
     # ------------------------------------------------------
 
     ax[1].plot(time_array,cft,linewidth=0.8)
-    ax[1].axhline(x=1.5, color="g", linestine="--", alpha=0.3)
-    ax[1].axhline(x=2.5, color="b", linestine="--", alpha=0.3)
     ax[1].set_ylabel("Characteristic Function")
     ax[1].grid(alpha=0.3)
     ax[1].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M:%S"))
@@ -143,7 +141,7 @@ def plot_detection(
 # ==========================================================
 
 if __name__ == "__main__":
-    st = read("14-08-25-Fabi.mseed")
+    st = read("22-02-25-Raul.mseed")
     tr = st[0]
     starttime = tr.stats.starttime
     endtime = tr.stats.endtime
