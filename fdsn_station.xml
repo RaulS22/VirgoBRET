@@ -3,8 +3,8 @@
   <Source>eXistDB</Source>
   <Sender>INGV-ONT</Sender>
   <Module>INGV-ONT WEB SERVICE: fdsnws-station | version: 1.1.64</Module>
-  <ModuleURI>/exist/apps/fdsn-station/fdsnws/station/1/query?starttime=2025-02-21T23%3A59%3A57.420000&amp;endtime=2025-02-23T00%3A00%3A01.270000&amp;network=MN&amp;station=SENA&amp;level=response</ModuleURI>
-  <Created>2026-05-21T22:32:33.682000Z</Created>
+  <ModuleURI>/exist/apps/fdsn-station/fdsnws/station/1/query?starttime=2025-08-13T23%3A59%3A56.590000&amp;endtime=2025-08-15T00%3A00%3A00.420000&amp;network=MN&amp;station=SENA&amp;level=response</ModuleURI>
+  <Created>2026-05-27T21:07:11.100000Z</Created>
   <Network code="MN" startDate="1988-01-01T00:00:00.000000Z" restrictedStatus="open">
     <Description>Mediterranean Very Broadband Seismographic Network</Description>
     <Identifier type="DOI">10.13127/sd/fbbbtdtd6q</Identifier>

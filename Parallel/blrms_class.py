@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from obspy.signal.filter import bandpass
 
+#TODO: implement quartis = np.quantile(dados, [0.25, 0.5, 0.75])
+
 
 class BLRMSProcessor:
 
