@@ -9,7 +9,6 @@ https://rdsa.knmi.nl/network/NL/
 The station in The Netherlands is called TERZ
 
 ObsPy reference: https://docs.obspy.org/packages/obspy.clients.fdsn.html#basic-fdsn-client-usage
-
 The format QuakeML: https://quake.ethz.ch/quakeml/QuakeML2.0/BasicEventDescriptionDiscussion
 
 The Italian Seismic Bulletin
@@ -26,3 +25,10 @@ months and is available for download QuakeML format. For each release of the BSI
 to download a technical document (in Italian, pdf format) which describes the main features of the 
 Italian seismicity and seismic network and specifies the BSI working group. A DOI is assigned to each
 BSI release to make easily quotable the work done by the BSI group.
+
+-------
+Working on: seismic data (.mseed) of INGV of the SoS-Enatos mine region.
+The data is available at https://eida.ingv.it/en/getdata
+
+Check README.md for more details.
+-------
