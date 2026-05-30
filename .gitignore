@@ -11,6 +11,7 @@
 /FFT_PSD_Tests/SENA-mseed-plots-test
 /SENA-files
 /Parallel/Processed
+/Parallel/__pycache__
 /Parallel/blrms_class.cpython-312.pyc
 14-08-25-Fabi.mseed
 22-02-25-Raul.mseed
