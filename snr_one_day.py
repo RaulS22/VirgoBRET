@@ -29,7 +29,7 @@ inv.write(xml_file, format="STATIONXML", validate=True)
 tr.detrend("demean")
 tr.detrend("linear")
 #tr.taper(max_percentage=0.05) #atrapalha pra dedeu no SNR
-tr.remove_response(inventory=inv, output="VEL", water_level=20) #velcidade em m/s 
+tr.remove_response(inventory=inv, output="VEL", water_level=20) #velocidade em m/s 
 #o wtater_level e responsevel por suavizar os vales, diminuir aumenta o tempo de execucao, aumentar mata muita informacao
 
 #time_array = tr.times() #time in s 
