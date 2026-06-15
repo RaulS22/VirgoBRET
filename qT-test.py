@@ -13,14 +13,14 @@ from gwpy.timeseries import TimeSeries
 # USER INPUTS
 # ==========================================================
 
-MSEED_FILE = "22-02-25-Raul.mseed"
+MSEED_FILE = "14-08-25-Fabi.mseed"
 
-WINDOWS = [10, 20, 30]      # seconds on each side
-FRANGE = (1, 20)
-QRANGE = (4, 64)
+WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
+FRANGE = (1, 30)
+QRANGE = (8, 64)
 
 CENTER_ON_PEAK = True
-PEAK_SEARCH_WINDOW = 20    # seconds
+PEAK_SEARCH_WINDOW = 5    # seconds
 
 PLOT_RESULTS = True
 
@@ -53,11 +53,7 @@ inv = client.get_stations(
 
 tr.detrend("demean")
 tr.detrend("linear")
-tr.remove_response(
-    inventory=inv,
-    output="VEL",
-    water_level=20
-)
+tr.remove_response(inventory=inv,output="VEL",water_level=20)
 
 # ==========================================================
 # STA/LTA
@@ -67,14 +63,17 @@ sta = 5
 lta = 600
 
 df = tr.stats.sampling_rate
+tr_original = tr.copy()
 
-cft = recursive_sta_lta(
-    tr.data,
-    int(sta * df),
-    int(lta * df)
-)
+fmin = FRANGE[0]
+fmax = FRANGE[1]
 
-on_threshold = 2.5
+tr_band = tr_original.copy()
+tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
+df = tr.stats.sampling_rate
+
+cft = recursive_sta_lta(tr_band.data, int(sta * df), int(lta * df))
+on_threshold = 5.0
 off_threshold = 1.5
 
 triggers = trigger_onset(cft, on_threshold, off_threshold)
@@ -89,7 +88,7 @@ trigger_times = []
 for onset, offset in triggers:
     trigger_time = (tr.stats.starttime +onset / tr.stats.sampling_rate)
     trigger_times.append(trigger_time)
-    #print(f"Trigger: {trigger_time} "f"(sample {onset})")
+    #print(f"Trigger: {trigger_time} (sample {onset})")
 
 if len(trigger_times) == 0:
     print("No triggers found.")
@@ -100,119 +99,67 @@ if len(trigger_times) == 0:
 # ==========================================================
 
 results = []
-
 for i, trigger_time in enumerate(trigger_times):
-    #print("\n" + "=" * 60)
-    #print(f"Trigger {i+1}/{len(trigger_times)}")
-    #print(f"STA/LTA time: {trigger_time}")
-
     center_time = trigger_time
 
     # ------------------------------------------------------
-    # Recenter on maximum amplitude
+    # Optional peak centering
     # ------------------------------------------------------
-
     if CENTER_ON_PEAK:
         search_start = trigger_time - PEAK_SEARCH_WINDOW
         search_end = trigger_time + PEAK_SEARCH_WINDOW
 
-        if (
-            search_start >= tr.stats.starttime
-            and
-            search_end <= tr.stats.endtime
-        ):
-
-            search_trace = tr.slice(
-                starttime=search_start,
-                endtime=search_end
-            )
-
+        if (search_start >= tr.stats.starttime and search_end <= tr.stats.endtime):
+            search_trace = tr.slice(starttime=search_start, endtime=search_end)
             if len(search_trace.data) > 0:
+                imax = np.argmax(np.abs(search_trace.data))
+                center_time = (search_trace.stats.starttime + imax / search_trace.stats.sampling_rate)
 
-                imax = np.argmax(
-                    np.abs(search_trace.data)
-                )
-
-                center_time = (
-                    search_trace.stats.starttime +
-                    imax /
-                    search_trace.stats.sampling_rate
-                )
-
-                print(
-                    f"Peak-centered time: "
-                    f"{center_time}"
-                )
-
-    # ------------------------------------------------------
-    # Test different windows
-    # ------------------------------------------------------
+    # ======================================================
+    # LOOP OVER WINDOW SIZES
+    # ======================================================
 
     for half_width in WINDOWS:
         total_duration = 2 * half_width
-        #print(f"\nProcessing ±{half_width}s "f"(duration={total_duration}s)")
-
-        # --------------------------------------------------
-        # Ensure window is inside trace
-        # --------------------------------------------------
-
-        start_event = center_time - half_width
-        end_event = center_time + half_width
-
-        if (start_event < tr.stats.starttime or end_event > tr.stats.endtime):
-            print("Window outside trace. Skipping.")
-            continue
-
-        # --------------------------------------------------
-        # Frequency sanity check
-        # --------------------------------------------------
-
         min_freq = FRANGE[0]
-
-        # Need several cycles of lowest frequency
         if total_duration < 4.0 / min_freq:
-            print(f"Window too short for "f"fmin={min_freq} Hz")
-            print(f"Need at least "f"{4.0/min_freq:.1f}s")
             continue
 
         # --------------------------------------------------
-        # Extract event
+        # Build perfectly symmetric window
         # --------------------------------------------------
 
-        tr_event = tr.slice(starttime=start_event,endtime=end_event)
-        #print(np.min(tr_event.data))
-        #print(np.max(tr_event.data))
-        #print(np.std(tr_event.data))
-        duration = (tr_event.stats.npts / tr_event.stats.sampling_rate)
-        #print(f"Samples={tr_event.stats.npts} " f"Duration={duration:.2f}s")
+        df = tr.stats.sampling_rate
+        center_idx = int((center_time - tr.stats.starttime)* df)
+        nwin = int(half_width * df)
+        i0 = center_idx - nwin
+        i1 = center_idx + nwin
 
-        if len(tr_event.data) == 0:
+        if i0 < 0 or i1 >= tr.stats.npts:
+            continue
+
+        data_event = tr.data[i0:i1]
+
+        if len(data_event) == 0:
             continue
 
         # --------------------------------------------------
-        # Convert to GWpy TimeSeries
+        # Relative time:
+        # trigger is exactly t = 0
         # --------------------------------------------------
 
-        
-
-
-        ts = TimeSeries(tr_event.data.astype(np.float64), sample_rate=tr_event.stats.sampling_rate, t0=0)
+        ts = TimeSeries(data_event.astype(np.float64),sample_rate=df,t0=0)
 
         # --------------------------------------------------
         # Q-transform
         # --------------------------------------------------
 
         try:
-
-            qspec = ts.q_transform(
-                frange=FRANGE,
-                qrange=QRANGE,
-                whiten=False
-            )
+            qspec = ts.q_transform(frange=FRANGE,qrange=QRANGE,whiten=False)
+            qspec.xindex = qspec.xindex.value - half_width/2
 
         except Exception as e:
             print(f"Q-transform failed:\n{e}")
-
             continue
 
         # --------------------------------------------------
@@ -224,15 +171,14 @@ for i, trigger_time in enumerate(trigger_times):
         mean_energy = np.nanmean(power)
 
         results.append({
+
             "trigger_time": trigger_time,
             "center_time": center_time,
             "half_width": half_width,
             "peak_energy": peak_energy,
             "mean_energy": mean_energy
-        })
 
-        #print(f"Peak energy = {peak_energy:.4e}")
-        #print(f"Mean energy = {mean_energy:.4e}")
+        })
 
         # --------------------------------------------------
         # Plot
@@ -241,11 +187,17 @@ for i, trigger_time in enumerate(trigger_times):
         if PLOT_RESULTS:
             fig = qspec.plot()
             ax = fig.gca()
-            ax.set_title(f"Q-transform\n Center = {center_time}\n Window = ±{half_width}s")
+            ax.set_title("Q-transform\n" f"Trigger = {center_time}\n" f"Window = ±{half_width} s")
+            ax.set_xlabel("Time relative to trigger [s]")
             ax.set_ylabel("Frequency [Hz]")
             ax.set_yscale("log")
+            ax.set_xlim(-half_width,half_width)
+            ax.axvline(0,color="red",linestyle="--",linewidth=1.5,alpha=0.8)
+            mappable = ax.collections[0]
+            cbar = fig.colorbar(mappable, ax=ax)
+            cbar.set_label("Q-transform intensity")
             filename = (f"trigger_{i:04d}_window_{half_width}s.pdf")
-            fig.savefig(OUTPUT_DIR / filename,dpi=300,bbox_inches="tight")
+            fig.savefig(OUTPUT_DIR / filename, dpi=300, bbox_inches="tight")
             plt.close(fig)
 
 # ==========================================================
@@ -257,9 +209,4 @@ print("SUMMARY")
 print("=" * 60)
 
 for r in results:
-    print(
-        f"Trigger={r['trigger_time']} | "
-        f"Window=±{r['half_width']}s | "
-        f"Peak={r['peak_energy']:.4e} | "
-        f"Mean={r['mean_energy']:.4e}"
-    )
+    print(f"Trigger={r['trigger_time']} | Window=±{r['half_width']}s | Peak={r['peak_energy']:.4e} | Mean={r['mean_energy']:.4e}")

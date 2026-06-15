@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from obspy import read, read_inventory
 from gwpy.timeseries import TimeSeries
 
+#TODO: Improve thios code based on qT-test.py
 
 # ==========================================================
 # FILES
@@ -55,9 +56,9 @@ ts_vel = TimeSeries(tr_vel.data,sample_rate=tr_vel.stats.sampling_rate,t0=tr_vel
 # ==========================================================
 
 print("Computing Q-transform (raw)...")
-q_raw = ts_raw.q_transform(frange=(0.1, 20),qrange=(4, 64),whiten=False)
+q_raw = ts_raw.q_transform(frange=(0.1, 3),qrange=(4, 64),whiten=False)
 print("Computing Q-transform (velocity)...")
-q_vel = ts_vel.q_transform(frange=(0.1, 20),qrange=(4, 64),whiten=False)
+q_vel = ts_vel.q_transform(frange=(0.1, 3),qrange=(4, 64),whiten=False)
 print("Done.")
 
 # ==========================================================
