@@ -16,3 +16,10 @@
 14-08-25-Fabi.mseed
 22-02-25-Raul.mseed
 fdsn_station.xml
+/SENA-mseed
+/spectrograms_jan_out_filtered
+/spectrograms_jan_unfiltered
+/spectrograms_jan_zoomed_filtered
+/sena-ago21-spectrogram
+/sena-ago21-filtered-test
+/sena-ago21-fft-notPSD
