@@ -16,14 +16,14 @@ from gwpy.timeseries import TimeSeries
 MSEED_FILE = "14-08-25-Fabi.mseed"
 
 WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
-FRANGE = (1, 30)
-QRANGE = (8, 64)
+FRANGE = (5, 30)
+QRANGE = (1, 10)
+
+fmin, fmax = FRANGE[0], FRANGE[1]
 
 CENTER_ON_PEAK = True
 PEAK_SEARCH_WINDOW = 5    # seconds
-
 PLOT_RESULTS = True
-
 OUTPUT_DIR = Path("qTransform")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -35,25 +35,25 @@ tr = st[0]
 starttime = tr.stats.starttime
 endtime = tr.stats.endtime
 
-# ==========================================================
-# DOWNLOAD RESPONSE
-# ==========================================================
-client = Client("INGV")
-inv = client.get_stations(
-    network="MN",
-    station="SENA",
-    starttime=starttime,
-    endtime=endtime,
-    level="response"
-)
-
-# ==========================================================
-# PREPROCESS
-# ==========================================================
-
-tr.detrend("demean")
-tr.detrend("linear")
-tr.remove_response(inventory=inv,output="VEL",water_level=20)
+# # ==========================================================
+# # DOWNLOAD RESPONSE
+# # ==========================================================
+# client = Client("INGV")
+# inv = client.get_stations(
+#     network="MN",
+#     station="SENA",
+#     starttime=starttime,
+#     endtime=endtime,
+#     level="response"
+# )
+# 
+# # ==========================================================
+# # PREPROCESS
+# # ==========================================================
+# 
+# tr.detrend("demean")
+# tr.detrend("linear")
+# tr.remove_response(inventory=inv,output="VEL",water_level=20)
 
 # ==========================================================
 # STA/LTA
@@ -62,15 +62,13 @@ tr.remove_response(inventory=inv,output="VEL",water_level=20)
 sta = 5
 lta = 600
 
-df = tr.stats.sampling_rate
-tr_original = tr.copy()
-
-fmin = FRANGE[0]
-fmax = FRANGE[1]
-
-tr_band = tr_original.copy()
+tr.resample(sampling_rate=2.2*fmax)
+tr_band = tr.copy()
 tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
-df = tr.stats.sampling_rate
+df = tr_band.stats.sampling_rate
+print(df)
+
+
 
 cft = recursive_sta_lta(tr_band.data, int(sta * df), int(lta * df))
 on_threshold = 5.0
@@ -155,8 +153,8 @@ for i, trigger_time in enumerate(trigger_times):
         # --------------------------------------------------
 
         try:
-            qspec = ts.q_transform(frange=FRANGE,qrange=QRANGE,whiten=False)
-            qspec.xindex = qspec.xindex.value - half_width/2
+            qspec = ts.q_transform(frange=FRANGE,qrange=QRANGE,whiten=True)
+            qspec.xindex = qspec.xindex.value - half_width
 
         except Exception as e:
             print(f"Q-transform failed:\n{e}")
@@ -187,7 +185,7 @@ for i, trigger_time in enumerate(trigger_times):
         if PLOT_RESULTS:
             fig = qspec.plot()
             ax = fig.gca()
-            ax.set_title("Q-transform\n" f"Trigger = {center_time}\n" f"Window = ±{half_width} s")
+            ax.set_title(f"Q-transform\n Trigger = {center_time}\n Window = ±{half_width} s")
             ax.set_xlabel("Time relative to trigger [s]")
             ax.set_ylabel("Frequency [Hz]")
             ax.set_yscale("log")
