@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import gc
 
 from obspy import read
-from scipy.signal import hilbert
 from PyEMD import CEEMDAN #use pip install EMD-signal
 
 
@@ -11,36 +11,43 @@ from PyEMD import CEEMDAN #use pip install EMD-signal
 # ==========================================================
 
 MSEED_FILE = "22-02-25-Raul.mseed"
+OUTPUT_FILE = "CEEMDAN_reconstructed.mseed"
 
-# Set to None to disable filtering
-FMIN = 0.01     # Hz
-FMAX = 30.0     # Hz
+FMIN = 0.3
+FMAX = 30.0
 
-# IMF indices to reconstruct
-# Python indexing starts at 0
-# Example: IMF3–IMF6 -> [2,3,4,5]
+# IMF indices to keep (Python indexing starts at 0)
 IMFS_TO_KEEP = [2, 3, 4, 5]
-
-SAVE_RECONSTRUCTED = True
-OUTPUT_FILE = "EMD_signal.mseed"
+WINDOW_HOURS = 1.0
+TRIALS = 10
+RANDOM_SEED = 42
 
 
 # ==========================================================
-# READ SEISMIC DATA
+# READ DATA
 # ==========================================================
 
 print("Reading MiniSEED...")
+
 st = read(MSEED_FILE)
+
 print(st)
+
 tr = st[0].copy()
+
+print(f"Sampling rate: {tr.stats.sampling_rate:.2f} Hz")
+print(f"NPTS: {tr.stats.npts:,}")
+print(f"Duration: {tr.stats.endtime - tr.stats.starttime}")
+
+# Optional downsampling
+TARGET_FS = 50.0
+
+if tr.stats.sampling_rate > TARGET_FS:
+    print(f"Resampling to {TARGET_FS} Hz")
+    tr.resample(TARGET_FS)
+
 fs = tr.stats.sampling_rate
 dt = tr.stats.delta
-
-print(f"Sampling rate: {fs:.3f} Hz")
-print(f"NPTS: {tr.stats.npts}")
-
-data = tr.data.astype(np.float64)
-time = tr.times()
 
 
 # ==========================================================
@@ -48,108 +55,194 @@ time = tr.times()
 # ==========================================================
 
 print("Preprocessing...")
+
 tr.detrend("demean")
 tr.detrend("linear")
 tr.taper(max_percentage=0.05)
 
 if FMIN is not None and FMAX is not None:
-    tr.filter("bandpass", freqmin=FMIN, freqmax=FMAX, corners=4, zerophase=True)
-data = tr.data.astype(np.float64)
+    tr.filter(
+        "bandpass",
+        freqmin=FMIN,
+        freqmax=FMAX,
+        corners=4,
+        zerophase=True
+    )
+
+data = tr.data.astype(np.float32)
+
+print(
+    f"Signal size in memory: "
+    f"{data.nbytes/1024**2:.2f} MB"
+)
+
+# ==========================================================
+# WINDOW DEFINITION
+# ==========================================================
+
+window_samples = int(WINDOW_HOURS * 3600 * fs)
+
+print(
+    f"Window length: {WINDOW_HOURS} h "
+    f"({window_samples:,} samples)"
+)
+
+reconstructed_full = []
+
+n_windows = int(np.ceil(len(data) / window_samples))
+
+print(f"Number of windows: {n_windows}")
 
 
 # ==========================================================
-# CEEMDAN DECOMPOSITION
+# CEEMDAN OBJECT
 # ==========================================================
 
-print("Running CEEMDAN decomposition...")
-ceemdan = CEEMDAN()
-# Optional tuning parameters
-ceemdan.noise_seed(42)
-IMFs = ceemdan(data)
-n_imfs = IMFs.shape[0]
-print(f"Number of IMFs: {n_imfs}")
-
-# ==========================================================
-# PLOT ORIGINAL SIGNAL + IMFs
-# ==========================================================
-
-fig, axes = plt.subplots(n_imfs + 1, 1, figsize=(14, 2*(n_imfs + 1)), sharex=True)
-axes[0].plot(time, data, linewidth=0.8)
-axes[0].set_title("Original Signal")
-
-for i in range(n_imfs):
-    axes[i + 1].plot(time, IMFs[i], linewidth=0.8)
-    axes[i + 1].set_ylabel(f"IMF {i+1}")
-axes[-1].set_xlabel("Time (s)")
-
-plt.tight_layout()
-plt.show()
+ceemdan = CEEMDAN(trials=TRIALS)
+ceemdan.noise_seed(RANDOM_SEED)
 
 
 # ==========================================================
-# RECONSTRUCTION
+# PROCESS WINDOWS
 # ==========================================================
 
-print("Reconstructing signal...")
-reconstructed = np.zeros_like(data)
-for idx in IMFS_TO_KEEP:
-    if idx < n_imfs:
-        reconstructed += IMFs[idx]
+for i in range(n_windows):
+
+    start = i * window_samples
+    end = min((i + 1) * window_samples, len(data))
+
+    chunk = data[start:end]
+
+    if len(chunk) < 1000:
+        continue
+
+    print(
+        f"Window {i+1}/{n_windows} "
+        f"({len(chunk):,} samples)"
+    )
+
+    try:
+
+        IMFs = ceemdan(chunk)
+
+        n_imfs = IMFs.shape[0]
+
+        reconstructed = np.zeros_like(chunk)
+
+        for idx in IMFS_TO_KEEP:
+
+            if idx < n_imfs:
+                reconstructed += IMFs[idx]
+
+        reconstructed_full.append(
+            reconstructed.astype(np.float32)
+        )
+
+        # Optional IMF energy output
+        total_energy = np.sum(chunk**2)
+
+        print("IMF energies:")
+
+        for j in range(n_imfs):
+
+            energy = np.sum(IMFs[j]**2)
+
+            frac = 100 * energy / total_energy
+
+            print(
+                f"   IMF {j+1:2d}: "
+                f"{frac:6.2f}%"
+            )
+
+        del IMFs
+        del reconstructed
+
+        gc.collect()
+
+    except Exception as e:
+
+        print(
+            f"Failed window {i+1}: {e}"
+        )
+
+
+# ==========================================================
+# MERGE WINDOWS
+# ==========================================================
+
+print("Merging windows...")
+
+reconstructed_full = np.concatenate(
+    reconstructed_full
+)
+
+print(
+    f"Final size: "
+    f"{len(reconstructed_full):,}"
+)
+
+# ==========================================================
+# SAVE MINISEED
+# ==========================================================
+
+tr_out = tr.copy()
+
+tr_out.data = reconstructed_full.astype(
+    np.float32
+)
+
+tr_out.write(
+    OUTPUT_FILE,
+    format="MSEED"
+)
+
+print(
+    f"Saved reconstructed signal to "
+    f"{OUTPUT_FILE}"
+)
+
+# ==========================================================
+# PLOT EXAMPLE SEGMENT
+# ==========================================================
+
+plot_samples = min(
+    int(600 * fs),  # first 10 minutes
+    len(reconstructed_full)
+)
+
+time = np.arange(plot_samples) / fs
 
 plt.figure(figsize=(14,5))
-plt.plot(time, data, label="Original", alpha=0.5)
-plt.plot(time, reconstructed, label="Reconstructed", linewidth=1)
-plt.legend()
+
+plt.plot(
+    time,
+    data[:plot_samples],
+    label="Original",
+    alpha=0.5
+)
+
+plt.plot(
+    time,
+    reconstructed_full[:plot_samples],
+    label="Reconstructed",
+    linewidth=1
+)
+
 plt.xlabel("Time (s)")
 plt.ylabel("Amplitude")
-plt.title("Signal Reconstruction")
-plt.show()
+plt.legend()
 
-
-# ==========================================================
-# HILBERT ANALYSIS
-# ==========================================================
-
-print("Computing instantaneous frequency...")
-
-# Example: analyze first reconstructed IMF
-imf_index = IMFS_TO_KEEP[0]
-analytic_signal = hilbert(IMFs[imf_index])
-amplitude = np.abs(analytic_signal)
-phase = np.unwrap(np.angle(analytic_signal))
-inst_freq = np.diff(phase) / (2*np.pi*dt)
-time_freq = time[:-1]
-fig, ax = plt.subplots(2, 1, figsize=(12,8), sharex=True)
-ax[0].plot(time, IMFs[imf_index])
-ax[0].set_title(f"IMF {imf_index+1}")
-
-ax[1].plot(time_freq, inst_freq)
-ax[1].set_ylabel("Frequency (Hz)")
-ax[1].set_xlabel("Time (s)")
-ax[1].set_title("Instantaneous Frequency")
+plt.title(
+    "First 10 minutes"
+)
 
 plt.tight_layout()
+
+plt.savefig(
+    "CEEMDAN_example.pdf",
+    dpi=300
+)
+
 plt.show()
 
-
-# ==========================================================
-# SAVE RECONSTRUCTED TRACE
-# ==========================================================
-
-if SAVE_RECONSTRUCTED:
-    tr_new = tr.copy()
-    tr_new.data = reconstructed.astype(np.float32)
-    tr_new.write(OUTPUT_FILE, format="MSEED")
-    print(f"Saved reconstructed trace: {OUTPUT_FILE}")
-
-# ==========================================================
-# IMF ENERGY ANALYSIS
-# ==========================================================
-
-print("\nIMF energy distribution:\n")
-total_energy = np.sum(data**2)
-for i in range(n_imfs):
-    energy = np.sum(IMFs[i]**2)
-    percentage = (100 * energy / total_energy)
-    print(f"IMF {i+1:2d}: {percentage:6.2f}%")
-print("\nDone.")
+print("Done.")
