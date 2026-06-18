@@ -8,6 +8,7 @@ from gwpy.timeseries import TimeSeries
 
 #TODO: Understand the qTransform
 #TODO: Check if the peals are actually peaks
+#TODO: Solve the date problem
 
 # ==========================================================
 # USER INPUTS
@@ -103,32 +104,7 @@ for ntrigger, t0 in enumerate(trigger_times):
         q = data.q_transform(frange=FRANGE,qrange=QRANGE, whiten=False)
         plot = q.plot()
         #plt.show()
-        filename = (f"tigger_{ntrigger}_window_{w}s.pdf")
+        filename = (f"trigger_{ntrigger}_window_{w}s.pdf")
         plt.savefig(OUTPUT_DIR / filename, dpi=300, bbox_inches="tight")
-
-        #
-        ## ------------------------------------
-        ## Q transform
-        ## ------------------------------------
-        #
-        #qspec = data.q_transform(frange=FRANGE,qrange=QRANGE,whiten=False)
-        #times = (qspec.xindex.value - t0.timestamp)
-        #freqs = qspec.yindex.value
-        #
-        ## ------------------------------------
-        ## Plot
-        ## ------------------------------------
-        #
-        #plt.figure(figsize=(12,6))
-        #plt.imshow(qspec.value.T,extent=[times[0],times[-1],freqs[0],freqs[-1]],aspect="auto",origin="lower")
-        #plt.axvline(0,linestyle="--")
-        #plt.xlabel("Time relative to trigger [s]")
-        #plt.ylabel("Frequency [Hz]")
-        #plt.title(f"Trigger {ntrigger+1} | ±{dt}s")
-        #plt.colorbar(label="Energy")
-        #filename = (OUTPUT_DIR /f"trigger_{ntrigger+1}_window_{dt}s.pdf")
-        #plt.savefig(filename,dpi=300,bbox_inches="tight")
-        #plt.close()
-        #print(f"Saved: {filename}")
 print("\nDone.")
     
