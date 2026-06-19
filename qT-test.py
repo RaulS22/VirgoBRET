@@ -60,9 +60,8 @@ sta = 5
 lta = 600
 
 tr_band = tr.copy()
-tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
+#tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
 df = tr_band.stats.sampling_rate
-
 
 cft = recursive_sta_lta(tr_band.data, int(sta * df), int(lta * df))
 on_threshold = 5.0
@@ -98,13 +97,17 @@ for ntrigger, t0 in enumerate(trigger_times):
         if len(tr_cut.data) == 0:
             continue
 
-        data = TimeSeries(tr_cut.data,sample_rate=tr_cut.stats.sampling_rate,t0=tr_cut.stats.starttime.timestamp)
+        #print(tr.stats.starttime)
+        data = TimeSeries(tr_cut.data,sample_rate=tr_cut.stats.sampling_rate,t0=0)
+        #data = TimeSeries(tr_cut.data,sample_rate=tr_cut.stats.sampling_rate,t0=tr_cut.stats.starttime.timestamp)
         #print(data)
-
-        q = data.q_transform(frange=FRANGE,qrange=QRANGE, whiten=False)
-        plot = q.plot()
+        #print(UTCDateTime(t0))
+        q = data.q_transform(whiten=True)
+        q.plot()
+        #q = data.q_transform(frange=FRANGE,qrange=QRANGE, whiten=False)
         #plt.show()
-        filename = (f"trigger_{ntrigger}_window_{w}s.pdf")
+        filename = (f"trigger_{ntrigger+1}_window_{w}s.pdf")
+        #filename = (f"trigger_{ntrigger+1}.pdf")
         plt.savefig(OUTPUT_DIR / filename, dpi=300, bbox_inches="tight")
 print("\nDone.")
     
