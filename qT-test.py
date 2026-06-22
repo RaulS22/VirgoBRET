@@ -60,7 +60,7 @@ endtime = tr.stats.endtime
 # ==========================================================
 
 sta = 5
-lta = 600
+lta = 60
 
 df = tr.stats.sampling_rate
 tr_original = tr.copy()
