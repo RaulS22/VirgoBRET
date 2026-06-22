@@ -20,7 +20,7 @@ FRANGE = (3, 30)
 QRANGE = (8, 64)
 
 CENTER_ON_PEAK = True
-PEAK_SEARCH_WINDOW = 5    # seconds
+PEAK_SEARCH_WINDOW = 1    # seconds
 
 PLOT_RESULTS = True
 
