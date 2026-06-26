@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 from obspy import read, UTCDateTime
 from obspy.clients.fdsn import Client
 from obspy.signal.trigger import recursive_sta_lta, trigger_onset
@@ -13,15 +14,15 @@ from gwpy.timeseries import TimeSeries
 # USER INPUTS
 # ==========================================================
 
-MSEED_FILE = "14-08-25-Fabi.mseed"
+MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
 
-WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
+#WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
+WINDOWS = [20]
 FRANGE = (3, 30)
-QRANGE = (8, 64)
+QRANGE = (4, 10)
 
 CENTER_ON_PEAK = True
 PEAK_SEARCH_WINDOW = 1    # seconds
-
 PLOT_RESULTS = True
 
 OUTPUT_DIR = Path("qTransform")
@@ -59,7 +60,7 @@ endtime = tr.stats.endtime
 # STA/LTA
 # ==========================================================
 
-sta = 5
+sta = 0.5
 lta = 60
 
 df = tr.stats.sampling_rate
@@ -73,7 +74,7 @@ tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
 df = tr.stats.sampling_rate
 
 cft = recursive_sta_lta(tr_band.data, int(sta * df), int(lta * df))
-on_threshold = 5.0
+on_threshold = 40.0
 off_threshold = 1.5
 
 triggers = trigger_onset(cft, on_threshold, off_threshold)
@@ -89,6 +90,8 @@ for onset, offset in triggers:
     trigger_time = (tr.stats.starttime +onset / tr.stats.sampling_rate)
     trigger_times.append(trigger_time)
     #print(f"Trigger: {trigger_time} (sample {onset})")
+
+trigger_times = sorted(trigger_times)
 
 if len(trigger_times) == 0:
     print("No triggers found.")
@@ -155,7 +158,7 @@ for i, trigger_time in enumerate(trigger_times):
         # --------------------------------------------------
 
         try:
-            qspec = ts.q_transform(frange=FRANGE,qrange=QRANGE,whiten=True)
+            qspec = ts.q_transform(whiten=True) #frange=FRANGE,qrange=QRANGE,whiten=True
             qspec.xindex = qspec.xindex.value - half_width
 
         except Exception as e:
@@ -190,14 +193,19 @@ for i, trigger_time in enumerate(trigger_times):
             ax.set_title("Q-transform\n" f"Trigger = {center_time}\n" f"Window = ±{half_width} s")
             ax.set_xlabel("Time relative to trigger [s]")
             ax.set_ylabel("Frequency [Hz]")
-            ax.set_yscale("log")
-            ax.set_xlim(-half_width,half_width)
+            #ax.set_yscale("log")
+            #ax.set_xlim(-3.0,3.0)
             ax.axvline(0,color="red",linestyle="--",linewidth=1.5,alpha=0.8)
+            ax.xaxis.set_major_locator(MultipleLocator(0.5))
+            ax.grid(False)
             mappable = ax.collections[0]
+            #mesh = ax.collections[0]
+            #mesh.set_edgecolor('face')
+            #mesh.set_linewidth(0)
             cbar = fig.colorbar(mappable, ax=ax)
             cbar.set_label("Q-transform intensity")
             filename = (f"trigger_{i:04d}_window_{half_width}s.pdf")
-            fig.savefig(OUTPUT_DIR / filename, dpi=300, bbox_inches="tight")
+            fig.savefig(OUTPUT_DIR / filename, dpi=300) #bbox_inches="tight"
             plt.close(fig)
 
 # ==========================================================
