@@ -22,7 +22,7 @@ FRANGE = (3, 30)
 QRANGE = (4, 10)
 
 CENTER_ON_PEAK = True
-PEAK_SEARCH_WINDOW = 1    # seconds
+PEAK_SEARCH_WINDOW = 0.5    # seconds
 PLOT_RESULTS = True
 
 OUTPUT_DIR = Path("qTransform")
@@ -194,7 +194,7 @@ for i, trigger_time in enumerate(trigger_times):
             ax.set_xlabel("Time relative to trigger [s]")
             ax.set_ylabel("Frequency [Hz]")
             #ax.set_yscale("log")
-            #ax.set_xlim(-3.0,3.0)
+            ax.set_xlim(-1.0,1.0)
             ax.axvline(0,color="red",linestyle="--",linewidth=1.5,alpha=0.8)
             ax.xaxis.set_major_locator(MultipleLocator(0.5))
             ax.grid(False)
