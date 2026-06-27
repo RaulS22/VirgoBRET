@@ -8,15 +8,15 @@ from pathlib import Path
 from gwpy.timeseries import TimeSeries
 from pathlib import Path
 
-#TODO: Understand the qTransform
-#TODO: Check if the peals are actually peaks
+#TODO: Check the sena files
+#TODO: Check if the parameters are great
 
 # ==========================================================
 # USER INPUTS
 # ==========================================================
 
-#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
-MSEED_FILE = "14-08-25-Fabi.mseed"
+MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed"
+#MSEED_FILE = "14-08-25-Fabi.mseed"
 
 #WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
 WINDOWS = [20]
@@ -89,6 +89,14 @@ off_threshold = 1.5
 
 triggers = trigger_onset(cft, on_threshold, off_threshold)
 print(f"\nNumber of triggers: {len(triggers)}")
+
+print(tr_original)
+print("\nTrace information:")
+print(f"Start time: {tr.stats.starttime}")
+print(f"End time:   {tr.stats.endtime}")
+print(f"Duration:   {(tr.stats.endtime - tr.stats.starttime)/86400:.2f} days")
+print(f"Number of samples: {tr.stats.npts}")
+print(f"Sampling rate: {tr.stats.sampling_rate} Hz")
 
 # ==========================================================
 # CONVERT TRIGGERS TO UTCDateTime
