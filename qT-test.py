@@ -6,6 +6,7 @@ from obspy.clients.fdsn import Client
 from obspy.signal.trigger import recursive_sta_lta, trigger_onset
 from pathlib import Path
 from gwpy.timeseries import TimeSeries
+from pathlib import Path
 
 #TODO: Understand the qTransform
 #TODO: Check if the peals are actually peaks
@@ -14,19 +15,28 @@ from gwpy.timeseries import TimeSeries
 # USER INPUTS
 # ==========================================================
 
-MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
+#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
+MSEED_FILE = "14-08-25-Fabi.mseed"
 
 #WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
 WINDOWS = [20]
 FRANGE = (3, 30)
 QRANGE = (4, 10)
 
+WHITEN = True
 CENTER_ON_PEAK = True
 PEAK_SEARCH_WINDOW = 0.5    # seconds
 PLOT_RESULTS = True
 
-OUTPUT_DIR = Path("qTransform")
-OUTPUT_DIR.mkdir(exist_ok=True)
+base_dir = Path("qTransform")
+output_dir = base_dir
+counter = 1
+
+while output_dir.exists():
+    output_dir = Path(f"{base_dir}_{counter}")
+    counter += 1
+output_dir.mkdir()
+print(f"Pasta criada: {output_dir}")
 
 # ==========================================================
 # READ DATA
@@ -74,7 +84,7 @@ tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
 df = tr.stats.sampling_rate
 
 cft = recursive_sta_lta(tr_band.data, int(sta * df), int(lta * df))
-on_threshold = 40.0
+on_threshold = 20.0
 off_threshold = 1.5
 
 triggers = trigger_onset(cft, on_threshold, off_threshold)
@@ -158,7 +168,7 @@ for i, trigger_time in enumerate(trigger_times):
         # --------------------------------------------------
 
         try:
-            qspec = ts.q_transform(whiten=True) #frange=FRANGE,qrange=QRANGE,whiten=True
+            qspec = ts.q_transform(whiten=WHITEN) #frange=FRANGE,qrange=QRANGE,whiten=True
             qspec.xindex = qspec.xindex.value - half_width
 
         except Exception as e:
@@ -205,16 +215,32 @@ for i, trigger_time in enumerate(trigger_times):
             cbar = fig.colorbar(mappable, ax=ax)
             cbar.set_label("Q-transform intensity")
             filename = (f"trigger_{i:04d}_window_{half_width}s.pdf")
-            fig.savefig(OUTPUT_DIR / filename, dpi=300) #bbox_inches="tight"
+            fig.savefig(output_dir / filename, dpi=300) #bbox_inches="tight"
             plt.close(fig)
 
 # ==========================================================
 # SUMMARY
 # ==========================================================
 
-print("\n" + "=" * 60)
-print("SUMMARY")
-print("=" * 60)
+summary_file = output_dir / "summary.txt"
 
-for r in results:
-    print(f"Trigger={r['trigger_time']} | Window=±{r['half_width']}s | Peak={r['peak_energy']:.4e} | Mean={r['mean_energy']:.4e}")
+def write_both(text, file):
+    print(text)
+    file.write(text + "\n")
+
+with open(summary_file, "w") as f:
+    write_both(f"Inputs: WINDOWS ={WINDOWS}, FRANGE = {FRANGE}, QRANGE = {QRANGE}, PEAK_SEARCH_WINDOW = {PEAK_SEARCH_WINDOW}, WHITHEN = {WHITEN}", f)
+    write_both(f"Parameters: sta = {sta}, lta = {lta}, on_threshold = {on_threshold}, off_threshold = {off_threshold}", f)
+
+    write_both("=" * 60, f)
+    write_both("SUMMARY", f)
+    write_both("=" * 60, f)
+
+    for r in results:
+        write_both(
+            f"Trigger={r['trigger_time']} | "
+            f"Window=±{r['half_width']}s | "
+            f"Peak={r['peak_energy']:.4e} | "
+            f"Mean={r['mean_energy']:.4e}",
+            f
+        )
