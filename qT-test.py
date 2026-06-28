@@ -10,7 +10,6 @@ from pathlib import Path
 
 #TODO: Check the sena files
 #TODO: Check if the parameters are great
-#TODO: Fix the colorbar
 
 # ==========================================================
 # USER INPUTS
