@@ -215,6 +215,10 @@ for i, trigger_time in enumerate(trigger_times):
             ax.set_ylabel("Frequency [Hz]")
             ax.set_yscale("log")
             ax.set_ylim(FRANGE[0], FRANGE[1])
+            # Explicit log ticks
+            ticks = [3, 4, 5, 6, 8, 10, 20, 30]
+            ax.set_yticks(ticks)
+            ax.set_yticklabels([str(t) for t in ticks])
             ax.set_xlim(-1.0,1.0)
             ax.axvline(0,color="red",linestyle="--",linewidth=1.5,alpha=0.8)
             ax.xaxis.set_major_locator(MultipleLocator(0.5))
