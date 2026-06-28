@@ -215,8 +215,7 @@ for i, trigger_time in enumerate(trigger_times):
             ax.set_ylabel("Frequency [Hz]")
             ax.set_yscale("log")
             ax.set_ylim(FRANGE[0], FRANGE[1])
-            # Explicit log ticks
-            ticks = [3, 4, 5, 6, 8, 10, 20, 30]
+            ticks = [3, 4, 5, 6, 8, 10, 20, 30] # Explicit log ticks
             ax.set_yticks(ticks)
             ax.set_yticklabels([str(t) for t in ticks])
             ax.set_xlim(-1.0,1.0)
@@ -224,10 +223,10 @@ for i, trigger_time in enumerate(trigger_times):
             ax.xaxis.set_major_locator(MultipleLocator(0.5))
             ax.grid(False)
             mappable = ax.collections[0]
-            #mappable.set_clim(vmin=-1.0, vmax=1.0) #Color
-            #mesh = ax.collections[0]
-            #mesh.set_edgecolor('face')
-            #mesh.set_linewidth(0)
+            mappable.set_clim(vmin=0, vmax=2*on_threshold) #Color
+            mesh = ax.collections[0]
+            mesh.set_edgecolor('face')
+            mesh.set_linewidth(0)
             cbar = fig.colorbar(mappable, ax=ax)
             cbar.set_label("Q-transform intensity")
             filename = (f"trigger_{i:04d}_window_{half_width}s.pdf")
