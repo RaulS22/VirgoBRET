@@ -10,13 +10,15 @@ from pathlib import Path
 
 #TODO: Check the sena files
 #TODO: Check if the parameters are great
+#TODO: Fix the colorbar
 
 # ==========================================================
 # USER INPUTS
 # ==========================================================
 
-MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed"
+#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed"
 #MSEED_FILE = "14-08-25-Fabi.mseed"
+MSEED_FILE = "22-02-25-Raul.mseed"
 
 #WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
 WINDOWS = [20]
@@ -176,7 +178,7 @@ for i, trigger_time in enumerate(trigger_times):
         # --------------------------------------------------
 
         try:
-            qspec = ts.q_transform(whiten=WHITEN) #frange=FRANGE,qrange=QRANGE,whiten=True
+            qspec = ts.q_transform(frange=FRANGE,qrange=QRANGE,whiten=WHITEN) #frange=FRANGE,qrange=QRANGE,whiten=True
             qspec.xindex = qspec.xindex.value - half_width
 
         except Exception as e:
@@ -207,16 +209,18 @@ for i, trigger_time in enumerate(trigger_times):
 
         if PLOT_RESULTS:
             fig = qspec.plot()
-            ax = fig.gca()
+            ax = fig.axes[0]
             ax.set_title("Q-transform\n" f"Trigger = {center_time}\n" f"Window = ±{half_width} s")
             ax.set_xlabel("Time relative to trigger [s]")
             ax.set_ylabel("Frequency [Hz]")
-            #ax.set_yscale("log")
+            ax.set_yscale("log")
+            ax.set_ylim(FRANGE[0], FRANGE[1])
             ax.set_xlim(-1.0,1.0)
             ax.axvline(0,color="red",linestyle="--",linewidth=1.5,alpha=0.8)
             ax.xaxis.set_major_locator(MultipleLocator(0.5))
             ax.grid(False)
             mappable = ax.collections[0]
+            #mappable.set_clim(vmin=-1.0, vmax=1.0) #Color
             #mesh = ax.collections[0]
             #mesh.set_edgecolor('face')
             #mesh.set_linewidth(0)
