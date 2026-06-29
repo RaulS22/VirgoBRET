@@ -6,6 +6,32 @@ The aim is to process seismic data from SoS Enatos region.
 Data available at: https://eida.ingv.it/en/getdata/ 
 for SoS Enatos region it is necessary to search for SENA.
 
+### Ongoing Work ###
+
+What has been done now is the q-Transform of data. 
+
+The approach to stablish a "SNR" of the signal is the 
+ratio between a STA (short time average) and LTA (long
+time average) and had promissing results unstil now. 
+With this in hand, a "cutoff" is set and we are able to
+get the times of the events that we want. 
+
+After this, the q-Transform is created, using GWPy. 
+The optimal value of the parameters are still being 
+tested before we proceed with the dimensional reduction
+techniques that we want to use so we can have coherent 
+data.
+
+### Other Results ###
+
+A study of microseisms was perfomed by making use of BLRMS
+(Band-Limited Root Mean Square). With this, it was possible
+to observe that diferent bands will have diferent responses.
+
+CEEMDAN (Complete Ensemble Empirical Mode Decomposition with
+Adaptive Noise) was used in a file in order as a commissioning
+and benchmark of this type of algorithm for future pespectives.
+
 ### Old folder ###
 
 First, a study about how to work on seismic data was done by 
@@ -53,8 +79,6 @@ data from june/2021 and has been used for the first tests and debugs.
 
 Note from May: now these folders are located at /FFT_PSD_Tests.
 
-### Some results at the moment ###
-
 We have obtained a way to develop the calculations of the FFT and PSD
 of the data. An atempt of paralelizing was done, with openmp, with promissing
 results. These results are stored at the /FFT_PSD_Tests folder.
@@ -67,10 +91,10 @@ We had some issues with the removing of the station response, so there is a litt
 debug program at the /Station folder, so this specific test can be done quickly.
 
 Optmizing the computaional time of the analisys of
-our microseismic data has been an important step, since now we want to implement
+our microseismic data has been an important step, since we want to implement
 the q-transform and use dimensional reduction techniques (such as t-SNE).
 
-### Working on ###
+### Perspectives ###
 
 Study of the periodicity of seismic events.
 
