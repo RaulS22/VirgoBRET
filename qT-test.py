@@ -11,6 +11,8 @@ from pathlib import Path
 #TODO: Check the sena files
 #TODO: Check if the parameters are great
 
+#Note: This code will be the base for the loop and the vectorization.
+
 # ==========================================================
 # USER INPUTS
 # ==========================================================
@@ -233,7 +235,7 @@ for i, trigger_time in enumerate(trigger_times):
             ax.xaxis.set_major_locator(MultipleLocator(0.5))
             ax.grid(False)
             mesh = ax.collections[0]
-            mesh.set_clim(vmin=0, vmax=2*on_threshold)
+            #mesh.set_clim(vmin=0, vmax=2*on_threshold)
             mesh.set_edgecolors('face')
             mesh.set_antialiased(False)
             mesh.set_rasterized(True)
