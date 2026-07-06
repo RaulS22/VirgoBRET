@@ -15,18 +15,19 @@ from pathlib import Path
 # USER INPUTS
 # ==========================================================
 
-#MSEED_FILE = "eida_response_20250101000000_20250201000000.mseed"
+MSEED_FILE = "eida_response_20250101000000_20250201000000.mseed"
 #MSEED_FILE = "14-08-25-Fabi.mseed"
-MSEED_FILE = "22-02-25-Raul.mseed"
+#MSEED_FILE = "22-02-25-Raul.mseed"
 
 #WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
 WINDOWS = [20]
 FRANGE = (3, 30)
 QRANGE = (4, 10)
 
+PEAK_SEARCH_WINDOW = 0.5    # seconds
+
 WHITEN = True
 CENTER_ON_PEAK = True
-PEAK_SEARCH_WINDOW = 0.5    # seconds
 PLOT_RESULTS = True
 
 base_dir = Path("qTransform")
@@ -205,13 +206,11 @@ for i, trigger_time in enumerate(trigger_times):
         mean_energy = np.nanmean(power)
 
         results.append({
-
             "trigger_time": trigger_time,
             "center_time": center_time,
             "half_width": half_width,
             "peak_energy": peak_energy,
             "mean_energy": mean_energy
-
         })
 
         # --------------------------------------------------
@@ -258,16 +257,9 @@ with open(summary_file, "w") as f:
     write_both(f"Start time: {starttime} \nEnd time: {endtime}", f)
     write_both(f"Inputs: WINDOWS ={WINDOWS}, FRANGE = {FRANGE}, QRANGE = {QRANGE}, PEAK_SEARCH_WINDOW = {PEAK_SEARCH_WINDOW}, WHITHEN = {WHITEN}", f)
     write_both(f"Parameters: sta = {sta}, lta = {lta}, on_threshold = {on_threshold}, off_threshold = {off_threshold}", f)
-
     write_both("=" * 60, f)
     write_both("SUMMARY", f)
     write_both("=" * 60, f)
 
     for r in results:
-        write_both(
-            f"Trigger={r['trigger_time']} | "
-            f"Window=±{r['half_width']}s | "
-            f"Peak={r['peak_energy']:.4e} | "
-            f"Mean={r['mean_energy']:.4e}",
-            f
-        )
+        write_both(f"Trigger={r['trigger_time']} | Window=±{r['half_width']}s | Peak={r['peak_energy']:.4e} | Mean={r['mean_energy']:.4e}", f)
