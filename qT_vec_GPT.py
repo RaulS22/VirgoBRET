@@ -13,12 +13,13 @@ from scipy.interpolate import RegularGridInterpolator
 # USER INPUTS
 # ==========================================================
 
-MSEED_FILE = "14-08-25-Fabi.mseed"
+MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250301000000_20250331235959.mseed"
 
 WINDOWS = [20]
 
 FRANGE = (3,30)
-QRANGE = (4,10)
+QRANGE = (4,10) #32, 16 testar depois
+#Tentar um histograma 
 
 PEAK_SEARCH_WINDOW = 0.5
 
@@ -169,7 +170,14 @@ for i, trigger_time in enumerate(trigger_times):
         # METRICS
         # ==================================================
 
-        power = qspec.value
+        power = np.array(qspec.value)
+        # Corrige orientação:
+        # gwpy -> (tempo,frequência)
+        # queremos -> (frequência,tempo)
+
+        if power.shape[0] == len(qspec.xindex):
+            power = power.T
+
         peak_energy = np.nanmax(power)
         mean_energy = np.nanmean(power)
 
@@ -179,6 +187,8 @@ for i, trigger_time in enumerate(trigger_times):
 
         times_original = np.array(qspec.xindex.value)
         freqs_original = np.array(qspec.yindex.value)
+
+        print(f"Power:{power.shape} | Freq:{len(freqs_original)} | Time:{len(times_original)}")
 
         try:
             interp = RegularGridInterpolator((freqs_original, times_original), power, bounds_error=False, fill_value=np.nan)

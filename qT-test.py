@@ -10,6 +10,11 @@ from pathlib import Path
 
 #TODO: Check the sena files
 #TODO: Check if the parameters are great
+#32, 16 testar depois
+#Tentar um histograma
+
+#TODO: Test other q values and plot an histogram
+#TODO: Use the flatten to make a vector of form [x1,x2,...xn,y1,y2,yn,...]
 
 #Note: This code will be the base for the loop and the vectorization.
 
@@ -17,9 +22,11 @@ from pathlib import Path
 # USER INPUTS
 # ==========================================================
 
-MSEED_FILE = "eida_response_20250101000000_20250201000000.mseed"
+#MSEED_FILE = "eida_response_20250101000000_20250201000000.mseed"
 #MSEED_FILE = "14-08-25-Fabi.mseed"
 #MSEED_FILE = "22-02-25-Raul.mseed"
+
+MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed"
 
 #WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
 WINDOWS = [20]
