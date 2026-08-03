@@ -31,7 +31,7 @@ MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_2025022823595
 #WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
 WINDOWS = [20]
 FRANGE = (3, 30)
-QRANGE = (4, 10)
+QRANGE = (64, 128)
 
 PEAK_SEARCH_WINDOW = 0.5    # seconds
 
