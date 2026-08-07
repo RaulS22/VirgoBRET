@@ -1,0 +1,11 @@
+Start time: 2025-01-01T00:00:03.120000Z 
+End time: 2025-01-13T22:17:23.130000Z
+Inputs: WINDOWS =[12], FRANGE = (3, 30), QRANGE = (16, 32), PEAK_SEARCH_WINDOW = 0.5, WHITHEN = True
+Parameters: sta = 0.5, lta = 60, on_threshold = 20, off_threshold = 1.5
+============================================================
+SUMMARY
+============================================================
+Trigger=2025-01-07T01:15:51.950000Z | Window=±12s | Peak=1.8091e+01 | Mean=1.5133e+00
+Trigger=2025-01-07T01:15:57.730000Z | Window=±12s | Peak=2.1699e+01 | Mean=1.4911e+00
+Trigger=2025-01-07T01:24:25.460000Z | Window=±12s | Peak=7.5547e+02 | Mean=5.0434e+00
+Trigger=2025-01-09T11:22:35.470000Z | Window=±12s | Peak=4.7953e+02 | Mean=6.0519e+00

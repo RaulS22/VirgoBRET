@@ -26,12 +26,13 @@ from pathlib import Path
 #MSEED_FILE = "14-08-25-Fabi.mseed"
 #MSEED_FILE = "22-02-25-Raul.mseed"
 
-MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed"
+#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed"
+MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
 
 #WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
-WINDOWS = [20]
+WINDOWS = [12]
 FRANGE = (3, 30)
-QRANGE = (64, 128)
+QRANGE = (16, 32)
 
 PEAK_SEARCH_WINDOW = 0.5    # seconds
 
@@ -95,11 +96,11 @@ fmin = FRANGE[0]
 fmax = FRANGE[1]
 
 tr_band = tr_original.copy()
-tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
+#tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
 df = tr.stats.sampling_rate
 
 cft = recursive_sta_lta(tr_band.data, int(sta * df), int(lta * df))
-on_threshold = 20.0
+on_threshold = 20
 off_threshold = 1.5
 
 triggers = trigger_onset(cft, on_threshold, off_threshold)

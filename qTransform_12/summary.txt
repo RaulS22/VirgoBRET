@@ -1,0 +1,24 @@
+Start time: 2025-01-31T23:59:57.260000Z 
+End time: 2025-02-06T09:16:42.810000Z
+Inputs: WINDOWS =[12], FRANGE = (1, 50), QRANGE = (1, 64), PEAK_SEARCH_WINDOW = 0.5, WHITHEN = True
+Parameters: sta = 0.5, lta = 60, on_threshold = 10.0, off_threshold = 1.5
+============================================================
+SUMMARY
+============================================================
+Trigger=2025-02-02T12:30:34.920000Z | Window=±12s | Peak=3.2168e+02 | Mean=4.5499e+00
+Trigger=2025-02-02T20:54:27.190000Z | Window=±12s | Peak=1.5416e+01 | Mean=1.4047e+00
+Trigger=2025-02-03T01:11:37.160000Z | Window=±12s | Peak=1.6616e+01 | Mean=1.5624e+00
+Trigger=2025-02-03T02:50:51.520000Z | Window=±12s | Peak=2.0746e+01 | Mean=1.4550e+00
+Trigger=2025-02-03T03:13:02.130000Z | Window=±12s | Peak=4.3208e+01 | Mean=1.5922e+00
+Trigger=2025-02-03T09:48:44.540000Z | Window=±12s | Peak=3.3093e+02 | Mean=2.5140e+00
+Trigger=2025-02-03T12:26:41.330000Z | Window=±12s | Peak=1.2690e+01 | Mean=1.5195e+00
+Trigger=2025-02-03T12:45:29.360000Z | Window=±12s | Peak=1.9652e+02 | Mean=2.0762e+00
+Trigger=2025-02-03T14:55:03.140000Z | Window=±12s | Peak=4.6011e+01 | Mean=1.6450e+00
+Trigger=2025-02-03T15:10:39.800000Z | Window=±12s | Peak=2.6105e+01 | Mean=1.4859e+00
+Trigger=2025-02-03T18:14:29.800000Z | Window=±12s | Peak=3.1766e+01 | Mean=1.5485e+00
+Trigger=2025-02-03T18:20:40.740000Z | Window=±12s | Peak=3.4860e+01 | Mean=1.7423e+00
+Trigger=2025-02-04T02:17:24.730000Z | Window=±12s | Peak=3.2185e+01 | Mean=1.5272e+00
+Trigger=2025-02-04T03:43:25.970000Z | Window=±12s | Peak=1.5563e+01 | Mean=1.5144e+00
+Trigger=2025-02-04T05:11:16.330000Z | Window=±12s | Peak=4.2054e+02 | Mean=5.8785e+00
+Trigger=2025-02-04T17:46:18.060000Z | Window=±12s | Peak=4.1583e+01 | Mean=1.6150e+00
+Trigger=2025-02-05T19:17:37.710000Z | Window=±12s | Peak=1.8790e+02 | Mean=2.3350e+00

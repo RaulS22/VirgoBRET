@@ -1,0 +1,7 @@
+Start time: 2025-01-31T23:59:57.260000Z 
+End time: 2025-02-06T09:16:42.810000Z
+Inputs: WINDOWS =[10], FRANGE = (3, 30), QRANGE = (64, 128), PEAK_SEARCH_WINDOW = 0.5, WHITHEN = True
+Parameters: sta = 0.5, lta = 60, on_threshold = 20.0, off_threshold = 1.5
+============================================================
+SUMMARY
+============================================================
