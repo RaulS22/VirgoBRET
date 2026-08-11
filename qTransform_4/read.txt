@@ -1,0 +1,2 @@
+qspec = ts.q_transform(frange=FRANGE, whiten=WHITEN)
+mismatch = 0.2
