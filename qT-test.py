@@ -8,10 +8,6 @@ from pathlib import Path
 from gwpy.timeseries import TimeSeries
 from pathlib import Path
 
-#TODO: Check the sena files
-#TODO: Check if the parameters are great
-#32, 16 testar depois
-#Tentar um histograma
 
 #TODO: Test other q values and plot an histogram
 #TODO: Use the flatten to make a vector of form [x1,x2,...xn,y1,y2,yn,...]
@@ -26,13 +22,13 @@ from pathlib import Path
 #MSEED_FILE = "14-08-25-Fabi.mseed"
 #MSEED_FILE = "22-02-25-Raul.mseed"
 
-#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed"
-MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
+MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed"
+#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
 
 #WINDOWS = [1, 2, 5, 10, 20, 30, 40]      # seconds on each side
 WINDOWS = [12]
 FRANGE = (3, 30)
-QRANGE = (16, 32)
+QRANGE = (10, 32)
 
 PEAK_SEARCH_WINDOW = 0.5    # seconds
 
@@ -96,7 +92,7 @@ fmin = FRANGE[0]
 fmax = FRANGE[1]
 
 tr_band = tr_original.copy()
-#tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
+tr_band.filter("bandpass", freqmin=fmin, freqmax=fmax)
 df = tr.stats.sampling_rate
 
 cft = recursive_sta_lta(tr_band.data, int(sta * df), int(lta * df))
@@ -200,7 +196,7 @@ for i, trigger_time in enumerate(trigger_times):
         # --------------------------------------------------
 
         try:
-            qspec = ts.q_transform(frange=FRANGE,qrange=QRANGE,whiten=WHITEN) #frange=FRANGE,qrange=QRANGE,whiten=True
+            qspec = ts.q_transform(frange=FRANGE, whiten=WHITEN) #frange=FRANGE,qrange=QRANGE,whiten=True
             qspec.xindex = qspec.xindex.value - half_width
 
         except Exception as e:
