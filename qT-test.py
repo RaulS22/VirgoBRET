@@ -239,7 +239,7 @@ for i, trigger_time in enumerate(trigger_times):
             ax.xaxis.set_major_locator(MultipleLocator(0.5))
             ax.grid(False)
             mesh = ax.collections[0]
-            #mesh.set_clim(vmin=0, vmax=2*on_threshold)
+            mesh.set_clim(vmin=0, vmax=2*on_threshold)
             mesh.set_edgecolors('face')
             mesh.set_antialiased(False)
             mesh.set_rasterized(True)

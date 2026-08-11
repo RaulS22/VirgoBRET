@@ -1,0 +1,1 @@
+qspec = ts.q_transform(frange=FRANGE, qrange=QRANGE, whiten=WHITEN)
