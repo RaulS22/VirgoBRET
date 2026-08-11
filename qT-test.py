@@ -196,7 +196,7 @@ for i, trigger_time in enumerate(trigger_times):
         # --------------------------------------------------
 
         try:
-            qspec = ts.q_transform(frange=FRANGE, qrange=QRANGE, whiten=WHITEN, mismatch=0.2) #frange=FRANGE,qrange=QRANGE,whiten=True
+            qspec = ts.q_transform(frange=FRANGE, qrange=QRANGE, whiten=WHITEN, mismatch=0.4) #frange=FRANGE,qrange=QRANGE,whiten=True
             qspec.xindex = qspec.xindex.value - half_width
 
         except Exception as e:
