@@ -18,18 +18,19 @@ MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_2025022823595
 
 STA = 0.5
 LTA = 60
-ON_THRESHOLD = 30 #20 was used before
-OFF_THRESHOLD = 7.5 #1.5 was used before
+ON_THRESHOLD = 20       #20 was used before
+OFF_THRESHOLD = 7.5     #1.5 was used before
 
 FRANGE = (3,30)
-QRANGE = (64,128)
-WHITEN = True
+QRANGE = (10,32) #Optimal value (tested) was this interval
+WHITEN = True 
 
-FREQ_BINS = 27
+FREQ_BINS = 30
 TIME_BINS = 41
+INTENSITY_THRESHOLD = None
 
-PERPLEXITY = 30
-DIMENSIONALITY = 2
+PERPLEXITY = 30     # For future tsne analysis
+DIMENSIONALITY = 2  # For future tsne analysis
 
 #######################################################################
 # Getting triggers with obspy 
@@ -64,12 +65,105 @@ def seismic_trig(file, fmin, fmax, UTC=False, p=False):
 triggers, tr = seismic_trig(MSEED_FILE, FRANGE[0], FRANGE[1], UTC=True, p=True)
 #print(triggers)
 
+if len(triggers) == 0:
+    print("No triggers found.")
+    raise SystemExit
+
 #######################################################################
-# Q-transform  
+# Post Q-transform Functions
 #######################################################################
 
-Rever
+def qtransform_to_matrix(qspec, interval, nt=TIME_BINS, nf=FREQ_BINS, frange=FRANGE, intensity_threshold=INTENSITY_THRESHOLD):
+    power = np.asarray(qspec.value, dtype=float)
+    original_times = np.asarray(qspec.xindex.value, dtype=float)
+    original_freqs = np.asarray(qspec.yindex.value, dtype=float)
 
+    #print(f"Q-transform original: {power.shape}")
+    #print(f"Time axis: {len(original_times)}")
+    #print(f"Frequency axis: {len(original_freqs)}")
+
+    if power.shape == (len(original_times),len(original_freqs)):
+        power = power.T
+
+    elif power.shape == (len(original_freqs),len(original_times)):
+        pass
+
+    else:
+        raise ValueError(
+            "Dimensões incompatíveis entre qspec.value "
+            "e os eixos da Q-transform:\n"
+            f"power.shape = {power.shape}\n"
+            f"len(time) = {len(original_times)}\n"
+            f"len(freq) = {len(original_freqs)}"
+        )
+
+    #print(f"Q-transform após correção: {power.shape}")
+
+    freq_mask = np.logical_and(original_freqs >= frange[0], original_freqs <= frange[1])
+    original_freqs = original_freqs[freq_mask]
+    power = power[freq_mask,:]
+
+    time_edges = np.linspace(-interval, interval, nt + 1)
+    time_bins = (time_edges[:-1] + time_edges[1:]) / 2.0
+
+    freq_edges = np.logspace(np.log10(frange[0]), np.log10(frange[1]), nf + 1)
+    freq_bins = np.sqrt(freq_edges[:-1] * freq_edges[1:])
+    matrix = np.zeros((nf, nt),dtype=float)
+
+    for fi in range(nf):
+        freq_mask_bin = np.logical_and(
+            original_freqs >= freq_edges[fi],
+            original_freqs < freq_edges[fi + 1])
+
+        if not np.any(freq_mask_bin):
+            continue
+
+        for ti in range(nt):
+
+            time_mask_bin = np.logical_and(
+                original_times >= time_edges[ti],
+                original_times < time_edges[ti + 1])
+
+            if not np.any(time_mask_bin):
+                continue
+
+            values = power[np.ix_(freq_mask_bin,time_mask_bin)]
+            finite_values = values[np.isfinite(values)]
+            if finite_values.size > 0:
+                matrix[fi, ti] = np.max(finite_values)
+
+    if intensity_threshold is not None:
+        matrix[matrix < intensity_threshold] = 0.0
+
+    return matrix
+
+def plot_qtransform_matrix(matrix, trigger_time, center_time, half_width, output_file, intensity_threshold=INTENSITY_THRESHOLD):
+    time_edges = np.linspace(-half_width, half_width, matrix.shape[1] + 1)
+    freq_edges = np.logspace(np.log10(FRANGE[0]), np.log10(FRANGE[1]), matrix.shape[0] + 1)
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    mesh = ax.pcolormesh(time_edges, freq_edges, matrix, shading="auto", cmap="jet")
+    ax.set_yscale("log")
+    ax.set_xlim(-1.0,1.0)
+    ax.set_ylim(freq_edges[0],freq_edges[-1])
+    ax.set_xlabel("Time relative to trigger [s]", fontsize=20)
+    ax.set_ylabel("Frequency [Hz]", fontsize=20)
+    ax.set_title(f"Q-transform Window = ±{half_width} s\n Trigger = {trigger_time}\n Center = {center_time}")
+    ax.axvline(0, color="red", linestyle="--", linewidth=1.5, alpha=0.8)
+    ax.xaxis.set_major_locator(MultipleLocator(0.5))
+    ax.grid(False)
+    mesh.set_edgecolors("face")
+    mesh.set_antialiased(False)
+    mesh.set_rasterized(True)
+    cbar = fig.colorbar(mesh, ax=ax)
+    cbar.set_label("Q-transform intensity")
+
+    if intensity_threshold is not None:
+        cbar.ax.axhline(intensity_threshold,linestyle="--",linewidth=1.5)
+
+    fig.tight_layout()
+    fig.savefig(output_file, dpi=300)
+    plt.close(fig)
 
 
 
@@ -107,29 +201,7 @@ if __name__ == "__main__":
         write_both(f"Start time: {starttime} \nEnd time: {endtime}", f)
         write_both(f"Inputs: FRANGE = {FRANGE}, QRANGE = {QRANGE}, WHITHEN = {WHITEN}", f)
         write_both(f"Parameters: sta = {STA}, lta = {LTA}, threshold = {ON_THRESHOLD}", f)
-        write_both(f"Images: frequency_bins = {FREQ_BINS}, time_bins = {TIME_BINS}", f)
+        write_both(f"Images: frequency_bins = {FREQ_BINS}, time_bins = {TIME_BINS}, intensity threshold ={INTENSITY_THRESHOLD}", f)
 
-    fig = qspec.plot()
-    ax = fig.axes[0]
-    ax.set_title(f"Q-transform Window = {2*half_width} s\n Trigger = {center_time}")
-    ax.set_xlabel("Time relative to trigger [s]")
-    ax.set_ylabel("Frequency [Hz]")
-    ax.set_yscale("log")
-    ax.set_ylim(FRANGE[0], FRANGE[1])
-    ticks = [3, 4, 5, 6, 8, 10, 20, 30] # Explicit log ticks
-    ax.set_yticks(ticks)
-    ax.set_yticklabels([str(t) for t in ticks])
-    ax.set_xlim(-1.0,1.0)
-    ax.axvline(0,color="red",linestyle="--",linewidth=1.5,alpha=0.8)
-    ax.xaxis.set_major_locator(MultipleLocator(0.5))
-    ax.grid(False)
-    mesh = ax.collections[0]
-    #mesh.set_clim(vmin=0, vmax=2*on_threshold)
-    mesh.set_edgecolors('face')
-    mesh.set_antialiased(False)
-    mesh.set_rasterized(True)
-    cbar = fig.colorbar(mesh, ax=ax)
-    cbar.set_label("Q-transform intensity")
-    filename = (f"trigger_{i:04d}_window_{half_width}s.pdf")
-    fig.savefig(output_dir / filename, dpi=300) #bbox_inches="tight"
-    plt.close(fig)
+    
+    
