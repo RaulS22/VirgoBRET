@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from matplotlib.ticker import MultipleLocator
 from obspy import read, UTCDateTime
 from obspy.clients.fdsn import Client
@@ -14,13 +15,17 @@ from pathlib import Path
 # Inputs
 #######################################################################
 
-MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed" 
+#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
+#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed" 
+#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250301000000_20250331235959.mseed"
+MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250401000000_20250430235959.mseed"
 
 STA = 0.5
 LTA = 60
 ON_THRESHOLD = 20       #20 was used before
-OFF_THRESHOLD = 7.5     #1.5 was used before
+OFF_THRESHOLD = 1.5     #1.5 was used before
 
+HALF_WIDTH = 12 # \pm 12s
 FRANGE = (3,30)
 QRANGE = (10,32) #Optimal value (tested) was this interval
 WHITEN = True 
@@ -59,19 +64,31 @@ def seismic_trig(file, fmin, fmax, UTC=False, p=False):
             trigger_time = (tr.stats.starttime +onset / tr.stats.sampling_rate)
             trigger_times.append(trigger_time)
         triggers = sorted(trigger_times)
-    return triggers, tr
+    return triggers
     
 
-triggers, tr = seismic_trig(MSEED_FILE, FRANGE[0], FRANGE[1], UTC=True, p=True)
+#triggers = seismic_trig(MSEED_FILE, FRANGE[0], FRANGE[1], UTC=True, p=True)
 #print(triggers)
 
-if len(triggers) == 0:
-    print("No triggers found.")
-    raise SystemExit
+#if len(triggers) == 0:
+#    print("No triggers found.")
+#    raise SystemExit
 
 #######################################################################
-# Post Q-transform Functions
+# Q-transform Functions
 #######################################################################
+
+def generate_qtransform(tr, trigger_time, half_width):
+    start = trigger_time - half_width
+    end = trigger_time + half_width
+    segment = tr.slice(start, end)
+
+    #t0 = 0  #t0=segment.stats.starttime.timestamp
+    ts = TimeSeries(segment.data,t0=0,sample_rate=segment.stats.sampling_rate)
+    qspec = ts.q_transform(qrange=QRANGE,frange=FRANGE,whiten=WHITEN)
+    qspec.xindex = qspec.xindex.value - half_width
+
+    return qspec
 
 def qtransform_to_matrix(qspec, interval, nt=TIME_BINS, nf=FREQ_BINS, frange=FRANGE, intensity_threshold=INTENSITY_THRESHOLD):
     power = np.asarray(qspec.value, dtype=float)
@@ -148,7 +165,7 @@ def plot_qtransform_matrix(matrix, trigger_time, center_time, half_width, output
     ax.set_ylim(freq_edges[0],freq_edges[-1])
     ax.set_xlabel("Time relative to trigger [s]", fontsize=20)
     ax.set_ylabel("Frequency [Hz]", fontsize=20)
-    ax.set_title(f"Q-transform Window = ±{half_width} s\n Trigger = {trigger_time}\n Center = {center_time}")
+    ax.set_title(f"Q-transform Window = ±{HALF_WIDTH} s\n Trigger = {trigger_time}\n Center = {center_time}")
     ax.axvline(0, color="red", linestyle="--", linewidth=1.5, alpha=0.8)
     ax.xaxis.set_major_locator(MultipleLocator(0.5))
     ax.grid(False)
@@ -189,8 +206,8 @@ if __name__ == "__main__":
     starttime = tr.stats.starttime
     endtime = tr.stats.endtime
 
-    print(f"File:{MSEED_FILE}")
-    print(f"Start time: {starttime} | End time: {endtime}")
+    #print(f"File:{MSEED_FILE}")
+    #print(f"Start time: {starttime} | End time: {endtime}")
     tr.plot(outfile=f"{output_dir}/mseed_amplitude.pdf")
 
     def write_both(text, file):
@@ -201,7 +218,91 @@ if __name__ == "__main__":
         write_both(f"Start time: {starttime} \nEnd time: {endtime}", f)
         write_both(f"Inputs: FRANGE = {FRANGE}, QRANGE = {QRANGE}, WHITHEN = {WHITEN}", f)
         write_both(f"Parameters: sta = {STA}, lta = {LTA}, threshold = {ON_THRESHOLD}", f)
-        write_both(f"Images: frequency_bins = {FREQ_BINS}, time_bins = {TIME_BINS}, intensity threshold ={INTENSITY_THRESHOLD}", f)
+        write_both(f"Images: frequency_bins = {FREQ_BINS}, time_bins = {TIME_BINS}, intensity threshold = {INTENSITY_THRESHOLD}", f)
 
     
-    
+    triggers = seismic_trig(MSEED_FILE,FRANGE[0],FRANGE[1],UTC=True,p=True)
+
+    if len(triggers) == 0:
+        print("No triggers found.")
+        raise SystemExit
+
+    rows = []
+    successful_triggers = 0
+    failed_triggers = 0
+
+    for i, trigger_time in enumerate(triggers):
+
+        print(f"\nProcessing trigger {i + 1}/{len(triggers)}: {trigger_time}")
+
+        try:
+            qspec = generate_qtransform(tr,trigger_time,HALF_WIDTH)
+            matrix = qtransform_to_matrix(qspec,interval=HALF_WIDTH,nt=TIME_BINS,nf=FREQ_BINS,frange=FRANGE,intensity_threshold=INTENSITY_THRESHOLD)
+
+            expected_shape = (FREQ_BINS,TIME_BINS)
+            if matrix.shape != expected_shape:
+                raise ValueError(f"Unexpected matrix shape: {matrix.shape}. Expected {expected_shape}.")
+
+            output_file = (output_dir /f"qtransform_{i:06d}.pdf")
+
+            plot_qtransform_matrix(matrix=matrix,trigger_time=trigger_time,center_time=trigger_time,half_width=1,output_file=output_file,intensity_threshold=INTENSITY_THRESHOLD)
+            features = matrix.flatten()
+            row = {"trigger_time": str(trigger_time)}
+
+            for j, value in enumerate(features):
+                row[f"feature_{j:04d}"] = value
+
+            rows.append(row)
+            successful_triggers += 1
+            print(f"Matrix: {matrix.shape} | Features: {features.shape}")
+
+        except Exception as e:
+            failed_triggers += 1
+            print(f"Failed trigger {i + 1} ({trigger_time}): {e}")
+
+    # ------------------------------------------------------------------------
+    # Create DataFrame
+    # ------------------------------------------------------------------------
+
+    if len(rows) == 0:
+        print("No Q-transforms were successfully processed.")
+        raise SystemExit
+
+    df = pd.DataFrame(rows)
+
+    print()
+    print("=" * 70)
+    print("FINAL DATASET")
+    print("=" * 70)
+
+    print(f"Total triggers: {len(triggers)}")
+    print(f"Failed triggers: {failed_triggers}")
+    print(f"DataFrame shape: {df.shape}")
+
+    # ------------------------------------------------------------------------
+    # Save Parquet
+    # ------------------------------------------------------------------------
+
+    parquet_file = (output_dir / "qtransform_features.parquet")
+    df.to_parquet(parquet_file,index=False)
+
+    print()
+    print(f"Parquet saved to: {parquet_file}")
+
+    # ------------------------------------------------------------------------
+    # Save summary
+    # ------------------------------------------------------------------------
+
+    summary_file = (output_dir / "summary.txt")
+
+    with open(summary_file,"w") as f:
+        f.write(f"File: {MSEED_FILE}\n")
+        f.write(f"Start time: {starttime} | End time: {endtime}\n")
+        f.write(f"FRANGE: {FRANGE} | QRANGE: {QRANGE} | WHITEN: {WHITEN}\n")
+        f.write(f"STA: {STA} | LTA: {LTA} | ON_THRESHOLD: {ON_THRESHOLD} | OFF_THRESHOLD: {OFF_THRESHOLD}\n")
+        f.write(f"Frequency bins: {FREQ_BINS} | Time bins: {TIME_BINS}\n")
+        f.write(f"Total triggers: {len(triggers)} | Successful triggers: {successful_triggers}\n")
+        f.write(f"Failed triggers: {failed_triggers}\n")
+        #f.write(f"Parquet file: {parquet_file}\n")
+
+    print(f"Summary saved to: {summary_file}")
