@@ -1,7 +1,0 @@
-File: SENA-files/2022/eida_response_MN-SENA_20220501000000_20220531235959.mseed
-Start time: 2022-04-30T23:59:58.760000Z | End time: 2022-05-09T22:13:09.810000Z
-FRANGE: (3, 30) | QRANGE: (10, 32) | WHITEN: True
-STA: 0.5 | LTA: 60 | ON_THRESHOLD: 20 | OFF_THRESHOLD: 1.5
-Frequency bins: 30 | Time bins: 41
-Total triggers: 1092 | Successful triggers: 1092
-Failed triggers: 0
