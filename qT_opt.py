@@ -15,7 +15,7 @@ from pathlib import Path
 # Inputs
 #######################################################################
 
-#2022
+#2022 (FEITO)
 #MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20220101000000_20220131235959.mseed"
 #MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20220201000000_20220228235959.mseed"
 #MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20220301000000_20220331235959.mseed"
@@ -25,12 +25,12 @@ from pathlib import Path
 #MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20220701000000_20220731235959.mseed"
 #MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20220801000000_20220831235959.mseed"
 #MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20220901000000_20220930235959.mseed" 
-MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20221001000000_20221031235959.mseed" #continuar daqui, ainda não rodei
-# MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20221101000000_20221130235959.mseed"
-# MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20221201000000_20221231235959.mseed"
+#MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20221001000000_20221031235959.mseed" 
+#MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20221101000000_20221130235959.mseed" 
+#MSEED_FILE = "SENA-files/2022/eida_response_MN-SENA_20221201000000_20221231235959.mseed" 
 
 #2023
-# MSEED_FILE = "SENA-files/2023/eida_response_MN-SENA_20230101000000_20230131235959.mseed"
+MSEED_FILE = "SENA-files/2023/eida_response_MN-SENA_20230101000000_20230131235959.mseed" #continuar daqui, ainda não rodei
 # MSEED_FILE = "SENA-files/2023/eida_response_MN-SENA_20230201000000_20230228235959.mseed"
 # MSEED_FILE = "SENA-files/2023/eida_response_MN-SENA_20230301000000_20230331235959.mseed"
 # MSEED_FILE = "SENA-files/2023/eida_response_MN-SENA_20230401000000_20230430235959.mseed"
