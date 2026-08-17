@@ -3,4 +3,4 @@ and contain the raw data of the years 2022, 2023,
 2024 and 2025. 2021 was not included at the time 
 since it did not contain a whole year and also 
 because with the data from 2022 to 2025 it is already
-expected to have statistical relevant outputs. 
+expected to have statistical relevant outputs.  
