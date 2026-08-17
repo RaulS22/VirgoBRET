@@ -17,7 +17,7 @@ from sklearn.manifold import TSNE
 DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/parquet_data")
 PARQUET_FILES = sorted(DATA_DIR.glob("**/*/qtransform_features.parquet"))
 OUTPUT_PARQUET = "tsne_results.parquet"
-OUTPUT_PLOT = "tsne_preliminartsne_clusters.png"
+OUTPUT_PLOT = "tsne_clusters.png"
 
 PERPLEXITY = 30
 RANDOM_STATE = 42
