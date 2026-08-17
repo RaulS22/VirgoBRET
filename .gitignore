@@ -32,7 +32,9 @@ raw_parquet_data.zip
 /raw_parquet_data/2023
 /raw_parquet_data/2024
 /raw_parquet_data/2025
+/tsne_preliminar/cut/tsne_results.parquet
 /tsne_preliminar/raw/tsne_results.parquet
+/tsne_preliminar/tsne_results.parquet
 cut_parquet_data.zip
 /cut_parquet_data/2022
 /cut_parquet_data/2023
