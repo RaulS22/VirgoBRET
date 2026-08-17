@@ -14,12 +14,12 @@ from sklearn.manifold import TSNE
 # CONFIGURATION
 # ============================================================
 
-DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/parquet_data")
+DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/raw_parquet_data")
 PARQUET_FILES = sorted(DATA_DIR.glob("**/*/qtransform_features.parquet"))
-OUTPUT_PARQUET = "tsne_results.parquet"
-OUTPUT_PLOT = "tsne_clusters.png"
+OUTPUT_PARQUET = "tsne_preliminar/tsne_results.parquet"
+OUTPUT_PLOT = "tsne_preliminar/tsne_clusters.pdf"
 
-PERPLEXITY = 30
+PERPLEXITY = 40
 RANDOM_STATE = 42
 
 PCA_COMPONENTS = 40
@@ -149,7 +149,7 @@ print("t-SNE")
 print("=" * 70)
 
 tsne = TSNE(n_components=2,perplexity=PERPLEXITY,init="pca",learning_rate="auto",random_state=RANDOM_STATE,)
-X_tsne = tsne.fit_transform(X_pca)
+X_tsne = tsne.fit_transform(X)
 
 print(f"t-SNE result: {X_tsne.shape}")
 
