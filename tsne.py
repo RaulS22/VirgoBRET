@@ -14,15 +14,15 @@ from sklearn.manifold import TSNE
 # CONFIGURATION
 # ============================================================
 
-DATA_DIR = Path("parquet_data")
-PARQUET_FILES = sorted(DATA_DIR.glob("*/qtransform_features.parquet"))
+DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/parquet_data")
+PARQUET_FILES = sorted(DATA_DIR.glob("**/*/qtransform_features.parquet"))
 OUTPUT_PARQUET = "tsne_results.parquet"
 OUTPUT_PLOT = "tsne_clusters.png"
 
-PERPLEXITY = 20
+PERPLEXITY = 30
 RANDOM_STATE = 42
 
-PCA_COMPONENTS = 20
+PCA_COMPONENTS = 40
 
 
 # ============================================================
