@@ -14,7 +14,7 @@ from sklearn.manifold import TSNE
 # CONFIGURATION
 # ============================================================
 
-DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/raw_parquet_data")
+DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/cut_parquet_data")
 PARQUET_FILES = sorted(DATA_DIR.glob("**/*/qtransform_features.parquet"))
 OUTPUT_PARQUET = "tsne_preliminar/tsne_results.parquet"
 OUTPUT_PLOT = "tsne_preliminar/tsne_clusters_p90.pdf"
