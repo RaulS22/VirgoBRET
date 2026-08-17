@@ -59,7 +59,7 @@ from pathlib import Path
 
 
 #2025 (FEITO)
-#MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
+MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250101000000_20250131235959.mseed"
 #MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250201000000_20250228235959.mseed" 
 #MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250301000000_20250331235959.mseed"
 #MSEED_FILE = "SENA-files/2025/eida_response_MN-SENA_20250401000000_20250430235959.mseed"
@@ -84,7 +84,7 @@ WHITEN = True
 
 FREQ_BINS = 30
 TIME_BINS = 41
-INTENSITY_THRESHOLD = None
+INTENSITY_THRESHOLD = 2*ON_THRESHOLD
 
 PERPLEXITY = 30     # For future tsne analysis
 DIMENSIONALITY = 2  # For future tsne analysis
@@ -202,7 +202,7 @@ def qtransform_to_matrix(qspec, interval, nt=TIME_BINS, nf=FREQ_BINS, frange=FRA
                 matrix[fi, ti] = np.max(finite_values)
 
     if intensity_threshold is not None:
-        matrix[matrix < intensity_threshold] = 0.0
+        matrix[matrix > intensity_threshold] = INTENSITY_THRESHOLD
 
     return matrix
 
@@ -242,7 +242,7 @@ def plot_qtransform_matrix(matrix, trigger_time, center_time, half_width, output
 
 if __name__ == "__main__":
 
-    base_dir = Path("results")
+    base_dir = Path("results_cut")
     output_dir = base_dir
     counter = 1
 
