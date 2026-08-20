@@ -10,11 +10,13 @@ from sklearn.manifold import TSNE
 from sklearn.metrics import pairwise_distances
 from scipy.stats import spearmanr
 
-DATA_DIR = Path("/home/rauls/Desktop/GithubITA/VirgoBRET/cut_parquet_data")
+DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/cut_parquet_data")
 PARQUET_FILES = sorted(DATA_DIR.glob("**/*/qtransform_features.parquet"))
 RANDOM_STATE = 42
 
 MONTH_ORDER = {"jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6, "jul": 7, "ago": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12}
+
+N_PAIRS = 500000
 
 if len(PARQUET_FILES) == 0:
     raise FileNotFoundError(
@@ -61,12 +63,18 @@ X_scaled = scaler.fit_transform(X)
 tsne = TSNE(n_components=2,perplexity=40,early_exaggeration=500,init="pca",learning_rate="auto",random_state=RANDOM_STATE, metric='manhattan')
 X_tsne = tsne.fit_transform(X)
 
-D_original = pairwise_distances(X, metric="euclidean")
-D_tsne = pairwise_distances(X_tsne, metric="euclidean")
-i, j = np.triu_indices_from(D_original, k=1)
+rng = np.random.default_rng(RANDOM_STATE)
+N = X.shape[0]
 
-d_original = D_original[i, j]
-d_tsne = D_tsne[i, j]
+idx1 = rng.integers(0, N, size=N_PAIRS)
+idx2 = rng.integers(0, N, size=N_PAIRS)
+
+mask = idx1 != idx2
+idx1 = idx1[mask]
+idx2 = idx2[mask]
+
+d_original = np.linalg.norm(X[idx1] - X[idx2],axis=1)
+d_tsne = np.linalg.norm(X_tsne[idx1] - X_tsne[idx2],axis=1)
 
 rho, pvalue = spearmanr(d_original, d_tsne)
 print(f"Spearman correlation = {rho:.4f}")
@@ -80,7 +88,6 @@ plt.title("Shepard Diagram — t-SNE")
 plt.grid(alpha=0.2)
 plt.tight_layout()
 plt.savefig("shepred_diagram.pdf")
-plt.show()
 
 PCA_COMPONENTS = 20
 n_components = min(PCA_COMPONENTS,X_scaled.shape[0] - 1,X_scaled.shape[1])
@@ -94,13 +101,18 @@ print(f"Explained variance: {explained_variance:.4f}")
 
 tsne = TSNE(n_components=2,perplexity=40,early_exaggeration=500,init="pca",learning_rate="auto",random_state=RANDOM_STATE, metric='manhattan')
 X_tsne = tsne.fit_transform(X_pca)
+rng = np.random.default_rng(RANDOM_STATE)
+N = X.shape[0]
 
-D_original = pairwise_distances(X_pca, metric="euclidean")
-D_tsne = pairwise_distances(X_tsne, metric="euclidean")
-i, j = np.triu_indices_from(D_original, k=1)
+idx1 = rng.integers(0, N, size=N_PAIRS)
+idx2 = rng.integers(0, N, size=N_PAIRS)
 
-d_original = D_original[i, j]
-d_tsne = D_tsne[i, j]
+mask = idx1 != idx2
+idx1 = idx1[mask]
+idx2 = idx2[mask]
+
+d_original = np.linalg.norm(X_pca[idx1] - X_pca[idx2],axis=1)
+d_tsne = np.linalg.norm(X_tsne[idx1] - X_tsne[idx2],axis=1)
 
 rho, pvalue = spearmanr(d_original, d_tsne)
 print(f"Spearman correlation = {rho:.4f}")
@@ -112,5 +124,5 @@ plt.xlabel("Distance in PC feature space")
 plt.ylabel("Distance in t-SNE space")
 plt.title("Shepard Diagram — t-SNE")
 plt.grid(alpha=0.2)
-plt.tight_layout("shepred_diagram_pca.pdf")
-plt.show()
+plt.tight_layout()
+plt.savefig("shepred_diagram_pca.pdf")
