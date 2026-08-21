@@ -8,19 +8,22 @@ for SoS Enatos region it is necessary to search for SENA.
 
 ### Ongoing Work ###
 
-What has been done now is the q-Transform of data. 
+After performing the q-Transform, the graph was divided into 
+30 bins of frequency and 41 bins of time. This matrix was then
+flattened into a 1230 vector. These vectors were combined into
+a .parquet file (a format similar to .cvs but with some advantages).
+With this in hand, dimensional reduction has been performed. The
+first approach was Principal Component Analysis (PCA). Then we 
+advanced to t-Distributed Stochastic Neighbor Embedding (t-SNE),
+Multidimensional Scaling (MDS) and Uniform Manifold Approximation
+and Projection (UMAP). Each one of these methods has its own 
+properties and features, and this is what we are putting effort into
+understanding right now so we can improve our analysis.
 
-The approach to stablish a "SNR" of the signal is the 
-ratio between a STA (short time average) and LTA (long
-time average) and had promissing results unstil now. 
-With this in hand, a "cutoff" is set and we are able to
-get the times of the events that we want. 
-
-After this, the q-Transform is created, using GWPy. 
-The optimal value of the parameters are still being 
-tested before we proceed with the dimensional reduction
-techniques that we want to use so we can have coherent 
-data.
+At this step, the main results are saved in notebook files in order to
+make the presentation of the results simpler to colleagues and everyone
+who is interested so the pearson does not have to download GB of data
+just to make a plot.
 
 ### Other Results ###
 
