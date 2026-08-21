@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.manifold import MDS
 
-DATA_DIR = Path("/home/rauls/Desktop/GithubITA/VirgoBRET/cut_parquet_data")
+DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/cut_parquet_data")
 PARQUET_FILES = sorted(DATA_DIR.glob("**/*/qtransform_features.parquet"))
 MONTH_ORDER = {"jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6, "jul": 7, "ago": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12}
 RANDOM_STATE = 42
