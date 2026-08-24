@@ -37,7 +37,7 @@ METRIC = ["euclidean","manhattan","cosine"]
 
 # Number of randomly selected point pairs used
 # in each Shepard diagram.
-N_PAIRS = 500_000
+N_PAIRS = 100000
 
 
 # ============================================================
@@ -194,7 +194,7 @@ for (p,e,n_pca,metric) in product(PERPLEXITY,EARLY_EXAGGERATION,PCA_COMPONENTS,M
     # t-SNE
     # ========================================================
 
-    tsne = TSNE(n_components=2,perplexity=p,early_exaggeration=e,init="pca",learning_rate="auto",random_state=RANDOM_STATE,metric=metric)
+    tsne = TSNE(n_components=2,perplexity=p,early_exaggeration=e,init="pca",learning_rate="auto",random_state=RANDOM_STATE,metric=metric, n_jobs=-1)
     try:
 
         X_tsne = tsne.fit_transform(X_pca)
@@ -234,8 +234,8 @@ for (p,e,n_pca,metric) in product(PERPLEXITY,EARLY_EXAGGERATION,PCA_COMPONENTS,M
         plt.scatter(X_tsne[:, 0],X_tsne[:, 1],s=5,alpha=0.5)
         plt.xlabel("t-SNE 1")
         plt.ylabel("t-SNE 2")
-        plt.title("t-SNE\n Perplexity = {p} | Early Exaggeration = {e} |" \
-        " PCA Components = {n_components} | Metric = {metric}")
+        plt.title(f"t-SNE\n Perplexity = {p} | Early Exaggeration = {e} |" \
+        f" PCA Components = {n_components} | Metric = {metric}")
         plt.grid(alpha=0.2)
         plt.tight_layout()
         pdf.savefig(fig,bbox_inches="tight")
@@ -245,9 +245,7 @@ for (p,e,n_pca,metric) in product(PERPLEXITY,EARLY_EXAGGERATION,PCA_COMPONENTS,M
         plt.scatter(d_original,d_tsne,s=4,alpha=0.20)
         plt.xlabel(f"Distance in PCA feature space ({metric})")
         plt.ylabel("Distance in t-SNE space")
-        plt.title(
-            "Shepard Diagram\n Perplexity = {p} | Early Exaggeration = {e} | PCA Components = {n_components} |" \
-            " Metric = {metric}\nSpearman $\\rho$ = {rho:.6f} | p-value = {pvalue:.3e}")
+        plt.title(f"Shepard Diagram\n Perplexity = {p} | Early Exaggeration = {e} | PCA Components = {n_components} | Metric = {metric}\nSpearman $\\rho$ = {rho:.6f} | p-value = {pvalue:.3e}")
 
         plt.grid(alpha=0.2)
         plt.tight_layout()
