@@ -1,0 +1,10 @@
+network,station,location,channel,station_name,latitude,longitude,elevation_m,channel_start,channel_end,sample_rate_hz
+VR,VRG01,,HH1,Virgo Central Building,43.631413,10.504497,53.0,2019-04-01T00:00:00,,100.0
+VR,VRG01,,HH2,Virgo Central Building,43.631413,10.504497,53.0,2019-04-01T00:00:00,,100.0
+VR,VRG01,,HH3,Virgo Central Building,43.631413,10.504497,53.0,2019-04-01T00:00:00,,100.0
+VR,VRG02,,HH1,Virgo North End Building,43.65693,10.516896,53.0,2019-04-01T00:00:00,,100.0
+VR,VRG02,,HH2,Virgo North End Building,43.65693,10.516896,53.0,2019-04-01T00:00:00,,100.0
+VR,VRG02,,HH3,Virgo North End Building,43.65693,10.516896,53.0,2019-04-01T00:00:00,,100.0
+VR,VRG03,,HH1,Virgo West End Building,43.640408,10.46937,52.0,2019-04-01T00:00:00,,100.0
+VR,VRG03,,HH2,Virgo West End Building,43.640408,10.46937,52.0,2019-04-01T00:00:00,,100.0
+VR,VRG03,,HH3,Virgo West End Building,43.640408,10.46937,52.0,2019-04-01T00:00:00,,100.0
