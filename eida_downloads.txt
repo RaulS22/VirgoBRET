@@ -1,0 +1,20 @@
+For the Virgo data, the seismic files were many and were too heavy to be
+downloaded directly from the site eida.ingv. For this reason, we proceeded
+to use the package fdsnws_scripts
+
+The scripts used to download O3b and O4b data were:
+
+fdsnws_fetch -N '*' -S 'VR*' -L '*' -C 'HH*' -s "2019-11-01T15:00:00Z" -e "2020-03-27T17:00:00Z" -v -o Virgo_O3b.mseed
+
+fdsnws_fetch -N '*' -S 'VR*' -L '*' -C 'HH*' -s "2024-04-10T15:00:00Z" -e "2025-01-28T17:00:00Z" -v -o Virgo_O4b.mseed
+
+The package is available at https://github.com/GEOFON/fdsnws_scripts
+User documentation at https://fdsnwsscripts.readthedocs.io/en/latest/userdoc.html
+
+The O3b observing run by the LIGO, Virgo, and KAGRA (LVK) collaboration took 
+place from November 1, 2019, at 15:00 UTC to March 27, 2020, at 17:00 UTC.
+https://gwosc.org/O3/O3b/
+
+The O4b observing run for the LIGO-Virgo-KAGRA (LVK) collaboration took 
+place from April 10, 2024, at 15:00 UTC to January 28, 2025, at 17:00 UTC.
+https://gwosc.org/O4/O4b/
