@@ -14,6 +14,7 @@ from scipy.stats import spearmanr
 
 #import time
 
+#TODO: Review Loops
 
 # ============================================================
 # CONFIGURATION

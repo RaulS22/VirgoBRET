@@ -11,6 +11,7 @@ from sklearn.metrics import pairwise_distances
 from scipy.stats import spearmanr
 import umap
 
+#TODO: Review Loops
 
 # ============================================================
 # CONFIGURATION
