@@ -220,6 +220,8 @@ def parse_date_from_filename(filename):
 # Main: loop over every run / station / channel / day-file
 #######################################################################
 
+#TODO: use concurrent.futures.ProcessPoolExecutor for peformance
+
 if __name__ == "__main__":
     base_dir = Path("Virgo_results_cut")
     output_dir = base_dir
@@ -263,9 +265,9 @@ if __name__ == "__main__":
 
                 for mseed_file in files:
                     total_files += 1
-                    print(f"\n{'=' * 70}")
-                    print(f"Processing: {mseed_file}")
-                    print(f"{'=' * 70}")
+                    #print(f"\n{'=' * 70}")
+                    #print(f"Processing: {mseed_file}")
+                    #print(f"{'=' * 70}")
 
                     try:
                         st = read(mseed_file, format="mseed")
@@ -296,8 +298,7 @@ if __name__ == "__main__":
                     file_out_dir.mkdir(parents=True, exist_ok=True)
 
                     for i, trigger_time in enumerate(triggers):
-                        print(f"Processing trigger {i + 1}/{len(triggers)}: {trigger_time}")
-
+                        #print(f"Processing trigger {i + 1}/{len(triggers)}: {trigger_time}")
                         try:
                             qspec = generate_qtransform(tr, trigger_time, HALF_WIDTH)
                             matrix = qtransform_to_matrix(qspec,interval=HALF_WIDTH,nt=TIME_BINS,nf=FREQ_BINS,frange=FRANGE,intensity_threshold=INTENSITY_THRESHOLD)
