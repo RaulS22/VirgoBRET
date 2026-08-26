@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import re
+from datetime import datetime
 from matplotlib.ticker import MultipleLocator
 from obspy import read, UTCDateTime
 from obspy.clients.fdsn import Client
@@ -37,7 +39,11 @@ and this is a direct result of the script download_virgo.sh, which comphends dat
 """
 
 # Global parameters (the same used for SoS-Enatos mine)
-PATH = Path("Virgo_data")
+PATH = Path("VirgoBRET/Virgo_data")
+
+RUNS = ["O3b", "O4b"]
+STATIONS = ["VRG01", "VRG02", "VRG03"]
+CHANNELS = ["HH1", "HH2", "HH3"]
 
 STA = 0.5
 LTA = 60
