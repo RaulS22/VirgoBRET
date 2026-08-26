@@ -12,10 +12,14 @@ from sklearn.manifold import TSNE
 from sklearn.metrics import pairwise_distances
 from scipy.stats import spearmanr
 
+#import time
+
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
+
+#time.sleep(7200)
 
 DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/cut_parquet_data")
 RANDOM_STATE = 42

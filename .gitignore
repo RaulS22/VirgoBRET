@@ -40,3 +40,5 @@ cut_parquet_data.zip
 /cut_parquet_data/2023
 /cut_parquet_data/2024
 /cut_parquet_data/2025
+/umap_shepard_results/pdf
+/tsne_shepard_results/pdf
