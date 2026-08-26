@@ -7,7 +7,7 @@ The scripts used to download O3b and O4b data were (failed):
 fdsnws_fetch -N '*' -S 'VR*' -L '*' -C 'HH*' -s "2019-11-01T15:00:00Z" -e "2020-03-27T17:00:00Z" -v -o Virgo_O3b.mseed
 fdsnws_fetch -N '*' -S 'VR*' -L '*' -C 'HH*' -s "2024-04-10T15:00:00Z" -e "2025-01-28T17:00:00Z" -v -o Virgo_O4b.mseed
 
-New attempt:
+2nd attempt (also failed since data was too big):
 
 for station in VRG01 VRG02 VRG03; do
     for channel in HH1 HH2 HH3; do
@@ -20,6 +20,8 @@ for station in VRG01 VRG02 VRG03; do
         fdsnws_fetch -N 'VR' -S "$station" -L '--' -C "$channel" -s "2024-04-10T15:00:00Z" -e "2025-01-28T17:00:00Z" -v -o "Virgo_O4b_${station}_${channel}.mseed"
     done
 done
+
+3rd attempt: script
 
 The package is available at https://github.com/GEOFON/fdsnws_scripts
 User documentation at https://fdsnwsscripts.readthedocs.io/en/latest/userdoc.html
