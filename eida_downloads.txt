@@ -21,7 +21,7 @@ for station in VRG01 VRG02 VRG03; do
     done
 done
 
-3rd attempt: script
+3rd attempt (worked for O3b, failed for O4b): script "download_virgo.sh"
 
 The package is available at https://github.com/GEOFON/fdsnws_scripts
 User documentation at https://fdsnwsscripts.readthedocs.io/en/latest/userdoc.html
