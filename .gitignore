@@ -43,3 +43,5 @@ cut_parquet_data.zip
 /umap_shepard_results/pdf
 /tsne_shepard_results/pdf
 /Virgo_data
+/Virgo_results_cut
+gravity_spy_O3b.csv
