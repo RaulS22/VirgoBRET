@@ -1,5 +1,6 @@
 import pandas as pd
 from obspy import UTCDateTime
+import matplotlib.pyplot as plt
 
 GPS_UNIX_OFFSET = 315964800
 GPS_UTC_OFFSET = 18
@@ -72,6 +73,31 @@ df_g_unmatched = df_g_unmatched.reset_index(drop=True)
 df_s_unmatched = df_s_unmatched.reset_index(drop=True)
 
 
-print(f"Matched pairs:       {len(df_matched)}")
-print(f"Unmatched df_g:      {len(df_g_unmatched)}")
-print(f"Unmatched df_s:      {len(df_s_unmatched)}")
+#print(f"Matched pairs:       {len(df_matched)}")
+#print(f"Unmatched df_g:      {len(df_g_unmatched)}")
+#print(f"Unmatched df_s:      {len(df_s_unmatched)}")
+
+# histograms of glitch classes for matched and for unmatched triggers
+counts = df_matched["label"].value_counts()
+counts.plot(kind='bar', color='skyblue', edgecolor='black', fontsize=7)
+plt.title('Frequency of Coincident Glitches')
+plt.ylabel('Count')
+plt.xlabel("Glitch Class")
+plt.tight_layout()
+plt.savefig("matched_glitch_classes_histogram.pdf", dpi=300)
+
+counts = df_g_unmatched["label"].value_counts()
+counts.plot(kind='bar', color='skyblue', edgecolor='black', fontsize=7)
+plt.title('Frequency of Unmatched Glitches (gw)')
+plt.ylabel('Count')
+plt.xlabel("Glitch Class")
+plt.tight_layout()
+plt.savefig("unmatched_glitch_classes_gw.pdf", dpi=300)
+
+counts = df_g_unmatched["label"].value_counts()
+counts.plot(kind='bar', color='skyblue', edgecolor='black', fontsize=7)
+plt.title('Frequency of Unmatched Glitches (seismic data)')
+plt.ylabel('Count')
+plt.xlabel("Glitch Class")
+plt.tight_layout()
+plt.savefig("unmatched_glitch_classes_seism.pdf", dpi=300)
