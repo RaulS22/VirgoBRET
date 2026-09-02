@@ -91,27 +91,37 @@ glitches_order = {"Low_Frequency_Burst": 1,"Scattered_Light": 2,"None_of_the_Abo
 # -------------------------------------------------------------------
 
 
+# -------------------------------------------------------------------
+# Generate one histogram for each df_s trigger
+# -------------------------------------------------------------------
+
+# Get all 20 labels ordered by their values in glitches_order
+all_ordered_labels = sorted(glitches_order.keys(), key=lambda k: glitches_order[k])
+
 for trigger_s, group in df_matched.groupby("trigger (df_s)", sort=True):
 
-    label_counts = group["label"].value_counts()
-    ordered_labels = sorted(label_counts.index,key=lambda label: glitches_order.get(label, 999))
-    label_counts = label_counts.reindex(ordered_labels)
+    # Count values and reindex against all 20 labels, filling missing ones with 0
+    label_counts = group["label"].value_counts().reindex(all_ordered_labels, fill_value=0)
 
     file_name = group["file"].iloc[0]
     trigger_string = trigger_s.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
     fig, ax = plt.subplots(figsize=(12, 7))
-    ax.bar(label_counts.index,label_counts.values)
+    ax.bar(label_counts.index, label_counts.values)
     ax.set_xlabel("Label")
     ax.set_ylabel("Number of incidences")
     ax.set_title(f"{file_name}\n df_s trigger: {trigger_string} UTC")
-    ax.tick_params(axis="x", rotation=75)
-    ax.grid(axis="y",linestyle="--",alpha=0.4)
+    
+    # Rotate x-axis labels so all 20 label names are legible
+    ax.tick_params(axis="x", rotation=45)
+    plt.xticks(ha="right")
+    
+    ax.grid(axis="y", linestyle="--", alpha=0.4)
     plt.tight_layout()
 
     trigger_filename = trigger_s.strftime("%Y%m%dT%H%M%S_%f")[:-3]
-    output_file = (output_dir / f"histogram_{trigger_filename}.pdf")
-    fig.savefig(output_file,dpi=300,bbox_inches="tight")
+    output_file = output_dir / f"histogram_{trigger_filename}.pdf"
+    fig.savefig(output_file, dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
