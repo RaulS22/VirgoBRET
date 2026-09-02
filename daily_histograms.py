@@ -90,11 +90,6 @@ glitches_order = {"Low_Frequency_Burst": 1,"Scattered_Light": 2,"None_of_the_Abo
 # Generate one histogram for each df_s trigger
 # -------------------------------------------------------------------
 
-
-# -------------------------------------------------------------------
-# Generate one histogram for each df_s trigger
-# -------------------------------------------------------------------
-
 # Get all 20 labels ordered by their values in glitches_order
 all_ordered_labels = sorted(glitches_order.keys(), key=lambda k: glitches_order[k])
 
