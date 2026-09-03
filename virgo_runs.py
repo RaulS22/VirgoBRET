@@ -189,18 +189,18 @@ In order to facilitate the study of periodicity, it is desirable to save the pro
 following folders structure:
 
 ---processed_Virgo_data
-    |---O3b
-        |---nov_2019
+    |---2022
+        |---jan_2022
         .
         .
         .
-        |---mar_2020
-    |---O4b
-        |---apr_2024
-        .
-        .
-        .
+        |---dec_2022
+    |---2025
         |---jan_2025
+        .
+        .
+        .
+        |---dec_2025
 
 so we can make use of parents_dir name.
 """
