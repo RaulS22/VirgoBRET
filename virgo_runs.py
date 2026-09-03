@@ -223,7 +223,7 @@ def parse_date_from_filename(filename):
 #TODO: use concurrent.futures.ProcessPoolExecutor for peformance
 
 if __name__ == "__main__":
-    base_dir = Path("Virgo_results_cut")
+    base_dir = Path("year_Virgo_results_cut")
     output_dir = base_dir
     counter = 1
 
