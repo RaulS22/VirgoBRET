@@ -28,9 +28,9 @@ df_g["trigger_time"] = df_g["GPStime"].apply(lambda gps: UTCDateTime(gps + GPS_U
 
 PATH = Path("VirgoBRET/Virgo_data")
 
-RUNS = ["O3b"] #["O3b", "O4b"]
-STATIONS = ["VRG01", "VRG02", "VRG03"]
-CHANNELS = ["HH1", "HH2", "HH3"]
+YEARS =    ["2022", "2023", "2024", "2025"]     #RUNS = ["O3b"] #["O3b", "O4b"]
+STATIONS = ["VRG01"]                            #["VRG01", "VRG02", "VRG03"]
+CHANNELS = ["HH#"]                              #["HH1", "HH2", "HH3"]
 
 STA = 0.5
 LTA = 60
@@ -188,8 +188,8 @@ if __name__ == "__main__":
     successful_triggers = 0
     failed_triggers = 0
 
-    for run in RUNS:
-        run_dir = PATH / run
+    for year in YEARS:
+        run_dir = PATH / year
 
         if not run_dir.exists():
             print(f"Run folder not found, skipping: {run_dir}")
@@ -202,7 +202,7 @@ if __name__ == "__main__":
                 files = sorted(run_dir.glob(pattern))
 
                 if not files:
-                    print(f"No files found for {run}/{station}_{channel}")
+                    print(f"No files found for {year}/{station}_{channel}")
                     continue
 
                 for mseed_file in files:
@@ -236,7 +236,7 @@ if __name__ == "__main__":
                     total_triggers += len(triggers)
                     month_year = file_date.strftime("%b_%Y").lower()
                     day_str = file_date.strftime("%Y%m%d")
-                    file_out_dir = output_dir / run / station / channel / month_year
+                    file_out_dir = output_dir / year / station / channel / month_year
                     file_out_dir.mkdir(parents=True, exist_ok=True)
 
                     for i, trigger_time in enumerate(triggers):
@@ -253,7 +253,7 @@ if __name__ == "__main__":
                             plot_qtransform_matrix(matrix=matrix,trigger_time=trigger_time,center_time=trigger_time,half_width=1,output_file=qplot_file,intensity_threshold=INTENSITY_THRESHOLD)
 
                             features = matrix.flatten()
-                            row = {"run": run,"station": station,"channel": channel,"file": mseed_file.name,"date": file_date.strftime("%Y-%m-%d"),"month_year": month_year,"trigger_time": str(trigger_time)}
+                            row = {"year": year,"station": station,"channel": channel,"file": mseed_file.name,"date": file_date.strftime("%Y-%m-%d"),"month_year": month_year,"trigger_time": str(trigger_time)}
                             for j, value in enumerate(features):
                                 row[f"feature_{j:04d}"] = value
 
