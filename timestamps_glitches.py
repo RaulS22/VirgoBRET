@@ -7,15 +7,18 @@ from matplotlib.ticker import MultipleLocator
 from obspy import read, UTCDateTime
 from obspy.clients.fdsn import Client
 from obspy.signal.trigger import recursive_sta_lta, trigger_onset
+from obspy import read, UTCDateTime
 from pathlib import Path
 from gwpy.timeseries import TimeSeries
+
+
+GPS_UNIX_OFFSET = 315964800
+GPS_UTC_OFFSET = 18
 
 df_s = pd.read_parquet("Virgo_results_cut/O3bqtransform_features.parquet")
 df_g = pd.read_csv("gravity_spy_O3b.csv")
 
-gps_epoch = pd.Timestamp("1980-01-06 00:00:00", tz="UTC")
-df_g["UTC_datetime"] = gps_epoch + pd.to_timedelta(df_g["GPStime"], unit="s")
-df_g["trigger_time"] = (df_g["UTC_datetime"].dt.strftime("%Y-%m-%dT%H:%M:%S.%f").str[:-3] + "Z")
+df_g["trigger_time"] = df_g["GPStime"].apply(lambda gps: UTCDateTime(gps + GPS_UNIX_OFFSET - GPS_UTC_OFFSET))
 
 #print(df_s['trigger_time'].head(5))
 #print()
