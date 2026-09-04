@@ -22,7 +22,7 @@ from scipy.stats import spearmanr
 
 #time.sleep(7200)
 
-DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/Virgo_results_cut/")
+#DATA_DIR = Path("/home/rauls/Desktop/VirgoBRET/Virgo_results_cut/")
 RANDOM_STATE = 42
 MONTH_ORDER = {"jan": 1,"feb": 2,"mar": 3,"apr": 4,"may": 5,"jun": 6,
                "jul": 7,"ago": 8,"sep": 9,"oct": 10,"nov": 11,"dec": 12}
@@ -49,7 +49,7 @@ N_PAIRS = 100000
 # OUTPUT DIRECTORIES
 # ============================================================
 
-OUTPUT_DIR = Path("VIRGO_tsne_shepard_results")
+OUTPUT_DIR = Path("year_VIRGO_tsne_shepard_results")
 TSNE_DIR = OUTPUT_DIR / "pdf"
 CSV_DIR = OUTPUT_DIR / "csv"
 TSNE_DIR.mkdir(parents=True, exist_ok=True)
@@ -60,18 +60,22 @@ CSV_DIR.mkdir(parents=True, exist_ok=True)
 # FIND PARQUET FILES
 # ============================================================
 
-PARQUET_FILES = list(DATA_DIR.glob("O3bqtransform_features.parquet"))
-
-if len(PARQUET_FILES) == 0:
-    raise FileNotFoundError(f"No parquet files found inside: {DATA_DIR}")
+#PARQUET_FILES = list(DATA_DIR.glob("O3bqtransform_features.parquet"))
+#
+#if len(PARQUET_FILES) == 0:
+#    raise FileNotFoundError(f"No parquet files found inside: {DATA_DIR}")
 
 
 # ============================================================
 # LOAD DATA
 # ============================================================
 
-dataframes = []
-df = pd.read_parquet(DATA_DIR / "O3bqtransform_features.parquet")
+df_s1 = pd.read_parquet("year_Virgo_results_cut/qtransform_features.parquet")
+df_s1 = df_s1.drop(columns=['year'])
+df_s2 = pd.read_parquet("Virgo_results_cut/O3bqtransform_features.parquet")
+df_s2 = df_s2.drop(columns=['run'])
+
+df_s = pd.concat([df_s1, df_s2], ignore_index=True)
 
 
 
@@ -79,7 +83,7 @@ df = pd.read_parquet(DATA_DIR / "O3bqtransform_features.parquet")
 # COMBINE DATA
 # ============================================================
 
-df_all = df.copy()
+df_all = df_s.copy()
 
 feature_columns = [col for col in df_all.columns if col.startswith("feature_")]
 if len(feature_columns) == 0:
