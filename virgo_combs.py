@@ -49,7 +49,7 @@ N_PAIRS = 100000
 # OUTPUT DIRECTORIES
 # ============================================================
 
-OUTPUT_DIR = Path("year_VIRGO_tsne_shepard_results")
+OUTPUT_DIR = Path("merged_H3_V1_year_VIRGO_tsne_shepard_results")
 TSNE_DIR = OUTPUT_DIR / "pdf"
 CSV_DIR = OUTPUT_DIR / "csv"
 TSNE_DIR.mkdir(parents=True, exist_ok=True)
@@ -73,10 +73,11 @@ CSV_DIR.mkdir(parents=True, exist_ok=True)
 df_s1 = pd.read_parquet("year_Virgo_results_cut/qtransform_features.parquet")
 df_s1 = df_s1.drop(columns=['year'])
 df_s2 = pd.read_parquet("Virgo_results_cut/O3bqtransform_features.parquet")
+df_s2 = df_s2[df_s2["channel"] == 'HH3']
+df_s2 = df_s2[df_s2["station"] == 'VRG01']
 df_s2 = df_s2.drop(columns=['run'])
 
 df_s = pd.concat([df_s1, df_s2], ignore_index=True)
-
 
 
 # ============================================================
