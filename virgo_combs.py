@@ -49,7 +49,7 @@ N_PAIRS = 100000
 # OUTPUT DIRECTORIES
 # ============================================================
 
-OUTPUT_DIR = Path("merged_H3_V1_year_VIRGO_tsne_shepard_results")
+OUTPUT_DIR = Path("merged_H3_Vx_year_VIRGO_tsne_shepard_results")
 TSNE_DIR = OUTPUT_DIR / "pdf"
 CSV_DIR = OUTPUT_DIR / "csv"
 TSNE_DIR.mkdir(parents=True, exist_ok=True)
