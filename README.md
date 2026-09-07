@@ -68,7 +68,7 @@ an important step, as it was at this point that we began working
 with .mseed files and established a standardized workflow for 
 seismic data processing.
 
-All of this work is at the /old folder and has been archived just
+All of this work is at the [old](old) folder and has been archived just
 for a report of what was previously done.
 
 ### About the structure of this work ###
@@ -83,7 +83,7 @@ last complete year at the beging of this work.
 A preliminar study of complete month was done first in order to debug
 and to optimize the codes. For this, the folder "/SENA-mseed" was used,
 containing a folder of the complete month of jan/2024 (explained at the 
-info.txt file). 
+[info.txt](info.txt) file). 
 The files at "/sena-jan24-raw-plots" folders were the first ploted data
 of amplitude versus time. At "/sena-jan24-filtered-test" we've made a
 cutting on microseismic data. Finally, at "/sena-jan24-filtered-test"
@@ -98,22 +98,22 @@ The data is at the /SENA-files and it is shorted by year at the
 respective folders for each year. the "/teste" folder contains the
 data from june/2021 and has been used for the first tests and debugs.
 
-Note from May: now these folders are located at /FFT_PSD_Tests.
+Note from May: now these folders are located at [FFT_PSD_Tests](FFT_PSD_Tests).
 
 We have obtained a way to develop the calculations of the FFT and PSD
 of the data. An atempt of paralelizing was done, with openmp, with promissing
 results. These results are stored at the /FFT_PSD_Tests folder.
-Some of the paralelizing steps are at the folder /Parallel folder.
+Some of the paralelizing steps are at the folder [Parallel](Parallel) folder.
 
 We also processed the velocity of seismic data in order to obtain a
 physical meaning and to have a better understanding of data so the classification
 could be done in a better way.
 We had some issues with the removing of the station response, so there is a little
-debug program at the /Station folder, so this specific test can be done quickly.
+debug program at the [Station](Station) folder, so this specific test can be done quickly.
 
 Optmizing the computaional time of the analisys of
 our microseismic data has been an important step, since we want to implement
-the q-transform and use dimensional reduction techniques (such as t-SNE).
+the q-transform and use dimensionality reduction techniques (such as t-SNE).
 
 Update: since the beginning of this work some things have changed. After the Sos
 Enatos data was processed by using the code [qT_opt.py](qT_opt.py), we proceeded to
