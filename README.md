@@ -1,10 +1,24 @@
 # About data used at this work #
 
 This work has been done by using open data from INGV.
-The aim is to process seismic data from SoS Enatos region.
+At firste, our aim was to process seismic data from SoS Enatos region.
+With the sucess of our preliminary analysis, and having stablished a
+method, we have extended our analysis to the Virgo Network
 
 Data available at: https://eida.ingv.it/en/getdata/ 
-for SoS Enatos region it is necessary to search for SENA.
+for SoS Enatos region it is necessary to search for MN SENA  and for
+Virgo it is necessary to search for VR VRG0x.
+
+After the SoS Enatos region, we have found a better way to obtaining data
+using fdsnwsscripts. The file [download_virgo.sh](download_virgo.sh) provides
+a way to download Virgo data for all stations and channels during O3b run. The
+file [year_virgo.sh](year_virgo.sh) downloads the data for each year, for the 
+central station and for the HH3 channel.
+
+We are very thankful for the the [fdsnwsscripts](https://github.com/GEOFN/fdsnws_scripts)
+project because we could stablish a more uniform and efficient way to
+obtain the data rather than just downloading file by file at the [eida getdata](https://eida.ingv.it/en/getdata/)
+website.
 
 ### Ongoing Work ###
 
@@ -12,7 +26,7 @@ After performing the q-Transform, the graph was divided into
 30 bins of frequency and 41 bins of time. This matrix was then
 flattened into a 1230 vector. These vectors were combined into
 a .parquet file (a format similar to .cvs but with some advantages).
-With this in hand, dimensional reduction has been performed. The
+With this in hand, dimensionality reduction has been performed. The
 first approach was Principal Component Analysis (PCA). Then we 
 advanced to t-Distributed Stochastic Neighbor Embedding (t-SNE),
 Multidimensional Scaling (MDS) and Uniform Manifold Approximation
@@ -20,10 +34,14 @@ and Projection (UMAP). Each one of these methods has its own
 properties and features, and this is what we are putting effort into
 understanding right now so we can improve our analysis.
 
+We are also trying to stablish a correlation between classes of seismic
+events and glitches using these dimensionality reduction techniques.
+
 At this step, the main results are saved in notebook files in order to
 make the presentation of the results simpler to colleagues and everyone
 who is interested so the pearson does not have to download GB of data
-just to make a plot.
+just to make a plot. Unfortunately, 3d projections and interactive graphs
+aren't available since they run locally. We are trying our best to improve this.
 
 ### Other Results ###
 
@@ -97,8 +115,14 @@ Optmizing the computaional time of the analisys of
 our microseismic data has been an important step, since we want to implement
 the q-transform and use dimensional reduction techniques (such as t-SNE).
 
+Update: since the beginning of this work some things have changed. After the Sos
+Enatos data was processed by using the code [qT_opt.py](qT_opt.py), we proceeded to
+dowload the Virgo data using the scripts .sh. They are very intuitive and the
+[fdsnwsscripts readthedocs](https://fdsnwsscripts.readthedocs.io/en/latest/) page
+provides a very complete documentation of this tool. 
+
 ### Perspectives ###
 
 Study of the periodicity of seismic events.
-
 Classification of seismic events trough band-limiting.
+Correlation of classes.
