@@ -159,7 +159,7 @@ def plot_qtransform_matrix(matrix, trigger_time, center_time, half_width, output
     freq_edges = np.logspace(np.log10(FRANGE[0]), np.log10(FRANGE[1]), matrix.shape[0] + 1)
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    mesh = ax.pcolormesh(time_edges, freq_edges, matrix, shading="auto", cmap="jet")
+    mesh = ax.pcolormesh(time_edges, freq_edges, matrix, shading="auto", cmap="jet", vmin=0, vmax=intensity_threshold)
     ax.set_yscale("log")
     ax.set_xlim(-1.0,1.0)
     ax.set_ylim(freq_edges[0],freq_edges[-1])
