@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import re
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timedelta
 from matplotlib.ticker import MultipleLocator
 from matplotlib.backends.backend_pdf import PdfPages
 from obspy import read, UTCDateTime
@@ -250,6 +250,28 @@ def plot_qtransform_pdf(qspec, matrix, trigger_time, center_time, half_width, ou
         pdf.savefig(fig, dpi=300)
         plt.close(fig)
 
+# Some adjustments for the output
+
+"""
+In order to facilitate the study of periodicity, it is desirable to save the processed data at the
+following folders structure:
+
+---processed_Virgo_data
+    |---2022
+        |---jan_2022
+        .
+        .
+        .
+        |---dec_2022
+    |---2025
+        |---jan_2025
+        .
+        .
+        .
+        |---dec_2025
+
+so we can make use of parents_dir name.
+"""
 
 def parse_date_from_filename(filename):
     """
@@ -273,6 +295,48 @@ def write_parquet_part(rows, parts_dir, part_idx):
     pd.DataFrame(rows).to_parquet(tmp_file, index=False)
     tmp_file.replace(part_file)
     return part_file
+
+#######################################################################
+# Overlap between consecutive day files
+#######################################################################
+
+def find_next_day_file(file_date, station, channel):
+    """
+    Looks for the file of the day after file_date (same station/channel). It is searched in the folder of the
+    NEXT day's year, so Dec 31 -> Jan 1 works across year folders. Returns None if there is no such file.
+    """
+    next_date = file_date + timedelta(days=1)
+    folder = PATH / str(next_date.year)
+    if not folder.exists():
+        return None
+    matches = sorted(folder.glob(f"{station}_{channel}_*{next_date.strftime('%Y-%m-%d')}*.mseed"))
+    return matches[0] if matches else None
+
+def extend_with_next_day(tr, next_file, seconds=HALF_WIDTH):
+    """
+    Returns a copy of tr with the first `seconds` of next_file appended, so a Q-transform window centred near
+    the end of tr is not truncated. Returns None (caller keeps using tr as it is) if the next file is empty,
+    unreadable, has another sampling rate, or does not start right where tr ends (a gap would corrupt the window).
+    Only the head of the next file is read from disk, not the whole day.
+    """
+    delta = tr.stats.delta
+    try:
+        st = read(next_file, format="mseed", starttime=tr.stats.endtime, endtime=tr.stats.endtime + seconds + 1.0)
+    except Exception:
+        return None
+    if len(st) == 0:
+        return None
+
+    # Drop a possible duplicated sample at the junction, then check that the two files really are contiguous
+    head = st.sort()[0].slice(starttime=tr.stats.endtime + 0.5 * delta)
+    if head.stats.npts == 0 or not np.isclose(head.stats.sampling_rate, tr.stats.sampling_rate):
+        return None
+    if abs(head.stats.starttime - (tr.stats.endtime + delta)) > delta:
+        return None
+
+    tr_ext = tr.copy()
+    tr_ext.data = np.concatenate([tr.data, head.data])
+    return tr_ext
 
 #######################################################################
 # Output folders: one per window, named from the window value
@@ -372,6 +436,23 @@ def process_window(matrix_half_width, output_dir):
                         log("No triggers found.")
                         continue
 
+                    # Triggers closer than HALF_WIDTH to the end of the file would get a truncated window, so we
+                    # borrow the first seconds of the next day's file. Triggers are still only detected in THIS file
+                    # (no duplicates); if the next file is missing/empty/not contiguous, nothing changes.
+                    tr_qt = tr
+                    n_near_end = sum(1 for t in triggers if t + HALF_WIDTH > endtime)
+                    if n_near_end > 0:
+                        next_file = find_next_day_file(file_date, station, channel)
+                        if next_file is None:
+                            log(f"{n_near_end} trigger(s) near the end of the file, but no next-day file was found: windows stay truncated")
+                        else:
+                            tr_ext = extend_with_next_day(tr, next_file)
+                            if tr_ext is None:
+                                log(f"{n_near_end} trigger(s) near the end of the file, but {next_file.name} is empty/unreadable/not contiguous: windows stay truncated")
+                            else:
+                                tr_qt = tr_ext
+                                log(f"{n_near_end} trigger(s) near the end of the file: windows extended with {next_file.name}")
+
                     total_triggers += len(triggers)
                     month_year = file_date.strftime("%b_%Y").lower()
                     day_str = file_date.strftime("%Y%m%d")
@@ -380,7 +461,7 @@ def process_window(matrix_half_width, output_dir):
 
                     for i, trigger_time in enumerate(triggers):
                         try:
-                            qspec = generate_qtransform(tr, trigger_time, HALF_WIDTH)
+                            qspec = generate_qtransform(tr_qt, trigger_time, HALF_WIDTH)
                             matrix = qtransform_to_matrix(qspec,interval=matrix_half_width,nt=TIME_BINS,nf=FREQ_BINS,frange=FRANGE,intensity_threshold=INTENSITY_THRESHOLD)
 
                             expected_shape = (FREQ_BINS, TIME_BINS)
