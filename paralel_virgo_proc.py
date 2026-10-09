@@ -22,11 +22,11 @@ CHANNELS = ["HH3"]
 
 STA = 0.5
 LTA = 60
-ON_THRESHOLD = 20
+ON_THRESHOLD = 15
 OFF_THRESHOLD = 1.5
 
 HALF_WIDTH = 12
-MATRIX_HALF_WIDTHS = [1.0, 2.0, 4.0, 6.0, 12.0]   
+MATRIX_HALF_WIDTHS = [1.0, 2.0, 4.0, 6.0, 12.0]
 MAX_WORKERS = len(MATRIX_HALF_WIDTHS)
 FRANGE = (2,30)
 QRANGE = (10,32)
@@ -74,6 +74,17 @@ def generate_qtransform(tr, trigger_time, half_width):
     qspec.xindex = qspec.xindex.value - half_width
 
     return qspec
+
+def get_q_value(qspec):
+    """
+    Q of the Q-plane that gwpy selected (the one with the highest energy inside QRANGE).
+    gwpy stores it as the `.q` attribute of the returned Spectrogram. Returns NaN if the
+    attribute is missing, so the column keeps its float dtype instead of breaking the run.
+    """
+    q = getattr(qspec, "q", None)
+    if q is None:
+        return np.nan
+    return float(getattr(q, "value", q))   # plain float, or a Quantity -> its value
 
 def qtransform_to_matrix(qspec, interval, nt=TIME_BINS, nf=FREQ_BINS, frange=FRANGE, intensity_threshold=INTENSITY_THRESHOLD):
     power = np.asarray(qspec.value, dtype=float)
@@ -239,28 +250,6 @@ def plot_qtransform_pdf(qspec, matrix, trigger_time, center_time, half_width, ou
         pdf.savefig(fig, dpi=300)
         plt.close(fig)
 
-# Some adjustments for the output
-
-"""
-In order to facilitate the study of periodicity, it is desirable to save the processed data at the
-following folders structure:
-
----processed_Virgo_data
-    |---2022
-        |---jan_2022
-        .
-        .
-        .
-        |---dec_2022
-    |---2025
-        |---jan_2025
-        .
-        .
-        .
-        |---dec_2025
-
-so we can make use of parents_dir name.
-"""
 
 def parse_date_from_filename(filename):
     """
@@ -297,7 +286,7 @@ def window_tag(matrix_half_width):
 
 def make_output_dir(matrix_half_width):
     """Creates and returns a fresh folder for this window (adds _1, _2, ... if it already exists from an earlier run)."""
-    base_dir = Path(f"{OUTPUT_PREFIX}_hw{window_tag(matrix_half_width)}")
+    base_dir = Path(f"{OUTPUT_PREFIX}_hw{window_tag(matrix_half_width)}_ont{ON_THRESHOLD}")
     output_dir = base_dir
     counter = 1
 
@@ -402,7 +391,7 @@ def process_window(matrix_half_width, output_dir):
                             plot_qtransform_pdf(qspec=qspec,matrix=matrix,trigger_time=trigger_time,center_time=trigger_time,half_width=matrix_half_width,output_file=qplot_file,intensity_threshold=INTENSITY_THRESHOLD)
 
                             features = matrix.flatten()
-                            row = {"year": year,"station": station,"channel": channel,"file": mseed_file.name,"date": file_date.strftime("%Y-%m-%d"),"month_year": month_year,"trigger_time": str(trigger_time)}
+                            row = {"year": year,"station": station,"channel": channel,"file": mseed_file.name,"date": file_date.strftime("%Y-%m-%d"),"month_year": month_year,"trigger_time": str(trigger_time),"q_value": get_q_value(qspec)}
                             for j, value in enumerate(features):
                                 row[f"feature_{j:04d}"] = value
 
@@ -444,7 +433,7 @@ def process_window(matrix_half_width, output_dir):
         rows.clear()
     result["parquet_parts"] = part_idx
 
-    n_columns = 7 + FREQ_BINS * TIME_BINS   # 7 metadata columns + one column per matrix pixel
+    n_columns = 8 + FREQ_BINS * TIME_BINS   # 8 metadata columns (incl. q_value) + one column per matrix pixel
     log(f"Total rows: {successful_triggers} in {part_idx} parquet part(s) at {parts_dir}")
 
     with open(summary_file, "a") as f:
