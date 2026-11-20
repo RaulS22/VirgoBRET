@@ -52,8 +52,8 @@ ON_THRESHOLD = 20
 OFF_THRESHOLD = 1.5   
 
 HALF_WIDTH = 12          # seconds each side of the trigger used to COMPUTE the Q-transform (whitening needs context)
-MATRIX_HALF_WIDTH = 1    # seconds each side of the trigger covered by the binned matrix and shown in the plots
-FRANGE = (3,30)
+MATRIX_HALF_WIDTH = 4    # seconds each side of the trigger covered by the binned matrix and shown in the plots
+FRANGE = (2,30)
 QRANGE = (10,32) 
 WHITEN = True 
 

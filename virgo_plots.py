@@ -9,7 +9,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
 RANDOM_STATE = 42
-df = pd.read_parquet("Virgo_results_cut_1/qtransform_features.parquet")
+df = pd.read_parquet("Virgo_results_cut/O3bqtransform_features.parquet")
 
 feature_columns = [col for col in df.columns if col.startswith("feature_")]
 if len(feature_columns) == 0:

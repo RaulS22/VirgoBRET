@@ -2,7 +2,7 @@ import pandas as pd
 from obspy import UTCDateTime
 import matplotlib.pyplot as plt
 
-GPS_UNIX_OFFSET = 315964800
+GPS_UNIX_OFFSET = 315964800 #GPS_UNIX_OFFSET = 315964800
 GPS_UTC_OFFSET = 18
 WINDOW_SECONDS = 12
 
@@ -10,7 +10,13 @@ WINDOW_SECONDS = 12
 # Read data
 # -------------------------------------------------------------------
 
-df_s = pd.read_parquet("Virgo_results_cut/O3bqtransform_features.parquet")
+df_s1 = pd.read_parquet("year_Virgo_results_cut/qtransform_features.parquet")
+df_s1 = df_s1.drop(columns=['year'])
+df_s2 = pd.read_parquet("Virgo_results_cut/O3bqtransform_features.parquet")
+df_s2 = df_s2.drop(columns=['run'])
+
+
+df_s = pd.merge(df_s1,df_s2)
 df_g = pd.read_csv("gravity_spy_O3b.csv")
 
 # Convert GPS time -> UTC
@@ -31,10 +37,10 @@ df_g["trigger_time"] = pd.to_datetime(df_g["trigger_time"], utc=True)
 df_s = df_s.sort_values("trigger_time").reset_index(drop=True)
 df_g = df_g.sort_values("trigger_time").reset_index(drop=True)
 
-#print(df_s["trigger_time"].head(5))
-#print()
-#print(df_g["trigger_time"].head(5))
-#print()
+print(df_s["trigger_time"].head(5))
+print()
+print(df_g["trigger_time"].head(5))
+print()
 
 g_times = df_g["trigger_time"].to_numpy()
 s_times = df_s["trigger_time"].to_numpy()
@@ -73,31 +79,31 @@ df_g_unmatched = df_g_unmatched.reset_index(drop=True)
 df_s_unmatched = df_s_unmatched.reset_index(drop=True)
 
 
-#print(f"Matched pairs:       {len(df_matched)}")
-#print(f"Unmatched df_g:      {len(df_g_unmatched)}")
-#print(f"Unmatched df_s:      {len(df_s_unmatched)}")
+print(f"Matched pairs:       {len(df_matched)}")
+print(f"Unmatched df_g:      {len(df_g_unmatched)}")
+print(f"Unmatched df_s:      {len(df_s_unmatched)}")
 
 # histograms of glitch classes for matched and for unmatched triggers
-counts = df_matched["label"].value_counts()
-counts.plot(kind='bar', color='skyblue', edgecolor='black', fontsize=7)
-plt.title('Frequency of Coincident Glitches')
-plt.ylabel('Count')
-plt.xlabel("Glitch Class")
-plt.tight_layout()
-plt.savefig("matched_glitch_classes_histogram.pdf", dpi=300)
-
-counts = df_g_unmatched["label"].value_counts()
-counts.plot(kind='bar', color='skyblue', edgecolor='black', fontsize=7)
-plt.title('Frequency of Unmatched Glitches (gw)')
-plt.ylabel('Count')
-plt.xlabel("Glitch Class")
-plt.tight_layout()
-plt.savefig("unmatched_glitch_classes_gw.pdf", dpi=300)
-
-counts = df_g_unmatched["label"].value_counts()
-counts.plot(kind='bar', color='skyblue', edgecolor='black', fontsize=7)
-plt.title('Frequency of Unmatched Glitches (seismic data)')
-plt.ylabel('Count')
-plt.xlabel("Glitch Class")
-plt.tight_layout()
-plt.savefig("unmatched_glitch_classes_seism.pdf", dpi=300)
+#counts = df_matched["label"].value_counts()
+#counts.plot(kind='bar', color='skyblue', edgecolor='black', fontsize=7)
+#plt.title('Frequency of Coincident Glitches')
+#plt.ylabel('Count')
+#plt.xlabel("Glitch Class")
+#plt.tight_layout()
+#plt.savefig("y_matched_glitch_classes_histogram.pdf", dpi=300)
+#
+#counts = df_g_unmatched["label"].value_counts()
+#counts.plot(kind='bar', color='skyblue', edgecolor='black', fontsize=7)
+#plt.title('Frequency of Unmatched Glitches (gw)')
+#plt.ylabel('Count')
+#plt.xlabel("Glitch Class")
+#plt.tight_layout()
+#plt.savefig("y_unmatched_glitch_classes_gw.pdf", dpi=300)
+#
+#counts = df_g_unmatched["label"].value_counts()
+#counts.plot(kind='bar', color='skyblue', edgecolor='black', fontsize=7)
+#plt.title('Frequency of Unmatched Glitches (seismic data)')
+#plt.ylabel('Count')
+#plt.xlabel("Glitch Class")
+#plt.tight_layout()
+#plt.savefig("y_unmatched_glitch_classes_seism.pdf", dpi=300)
